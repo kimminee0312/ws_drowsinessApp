@@ -1,7 +1,7 @@
 # macOS
 .DS_Store
 
-# Xcode
+# Xcode build & user settings
 build/
 DerivedData/
 *.xcuserstate
@@ -27,13 +27,13 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 
-# Firebase/GoogleService
+# Firebase/GoogleService (보안 주의: 필요 시 제외)
 GoogleService-Info.plist
-
-# Other
-*.log
-*.tmp
 
 # IDE
 .idea/
 .vscode/
+
+# 테스트 폴더 제외
+DrowsinessAppTests/
+DrowsinessAppUITests/
