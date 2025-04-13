@@ -340,6 +340,7 @@ struct RegisterView: View {
 // Drowsiness Detector start screen
 struct DashboardView: View {
     @State private var showStatusScreen = false
+    @State private var showFaceRegistrationAlert = false
 
     var body: some View {
         VStack() {
@@ -347,17 +348,16 @@ struct DashboardView: View {
             
             Text("Drowsiness Dector")
                 .font(.title2)
-                .foregroundColor(Color(.black))
+                .foregroundColor(Color(.darkGray)) // 어두운 회색
                 .bold()
 
             Button(action: {
-                drowsinessDetector()
-                showStatusScreen = true
+                checkFaceRegistrationAndStart()
             }) {
                 Text("System Start")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.red)
+                    .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
@@ -370,7 +370,28 @@ struct DashboardView: View {
         .fullScreenCover(isPresented: $showStatusScreen) {
             StatusView(isPresented: $showStatusScreen)
         }
+        .alert(isPresented: $showFaceRegistrationAlert) {
+            Alert(title: Text("Face not registered"), message: Text("Please register your face first"), dismissButton: .default(Text("check")))
+        }
     }
+    
+    func checkFaceRegistrationAndStart() {
+        guard let docId = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(docId).getDocument { snapshot, error in
+            if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
+                if registered {
+                    drowsinessDetector()
+                    showStatusScreen = true
+                } else {
+                    showFaceRegistrationAlert = true
+                }
+            } else {
+                showFaceRegistrationAlert = true
+            }
+        }
+    }
+    
     // DrowsinessDetector start sign
     func drowsinessDetector() {
         let db = Firestore.firestore()
@@ -398,6 +419,18 @@ struct StatusView: View {
     
     var body: some View {
         VStack(spacing: 20) {
+            HStack {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Label("Back", systemImage: "chevron.left")
+                        .foregroundColor(.blue)
+                }
+                .padding()
+
+                Spacer()
+            }
+            
             Spacer()
             
             Text("졸음 인식 상태")
@@ -526,16 +559,51 @@ struct HistoryView: View {
 // Settings screen
 struct SettingsView: View {
     @Binding var isLoggedIn: Bool
+    @State private var faceIdRegistered = true // 임의로 등록 했다고 가정 =========================
+    @State private var showFaceRegistration = false
 
     var body: some View {
-        VStack() {
+        VStack(spacing: 20) {
             Spacer()
             
             Text("Settings")
                 .font(.title2)
                 .bold()
-                .foregroundColor(Color(.black))
-
+                .foregroundColor(Color(.darkGray)) // 어두운 회색
+            
+            if !faceIdRegistered {
+                Button(action: {
+                    showFaceRegistration = true
+                }) {
+                    HStack {
+                        Text("Register Face")
+                        if !faceIdRegistered {
+                            Spacer()
+                            Text("Required")
+                                .foregroundColor(.red)
+                                .font(.caption)
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue.opacity(0.1))
+                    .cornerRadius(10)
+                }
+                .fullScreenCover(isPresented: $showFaceRegistration) {
+                    FaceRegistrationView(isRegistered: $faceIdRegistered)
+                }
+            } else {
+                HStack {
+                    Text("Face registration completed")
+                        .foregroundColor(.green)
+                    Spacer()
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(10)
+            }
+            
             Button(action: logout) {
                 Text("Logout")
                     .frame(maxWidth: .infinity)
@@ -549,15 +617,115 @@ struct SettingsView: View {
         }
         .padding()
         .background(Color.white.ignoresSafeArea())
+        .onAppear {
+            loadFaceIdStatus()
+        }
     }
 
+    func loadFaceIdStatus() {
+        guard let docId = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(docId).getDocument { snapshot, error in
+            if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
+                faceIdRegistered = registered
+            }
+        }
+    }
+    
     func logout() {
         do {
             try Auth.auth().signOut()
+            UserDefaults.standard.removeObject(forKey: "savedEmail")
+            UserDefaults.standard.removeObject(forKey: "savedPassword")
             isLoggedIn = false
         } catch {
             print("로그아웃 실패: \(error.localizedDescription)")
         }
+    }
+}
+
+// Face Registration View
+struct FaceRegistrationView: View {
+    @Binding var isRegistered: Bool
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        VStack(spacing: 20) {
+            HStack {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Label("Back", systemImage: "chevron.left")
+                        .foregroundColor(.blue)
+                }
+                .padding()
+
+                Spacer()
+            }
+
+            Text("Register Your Face")
+                .font(.title2)
+                .bold()
+
+            // 얼굴 촬영 기능 추가 예정 된다면
+            Rectangle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 300)
+                .overlay(Text("Camera Preview Here"))
+
+            Button("Complete Registration") {
+                saveFaceRegistered()
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+
+            Spacer()
+        }
+        .padding()
+        .background(Color.white.ignoresSafeArea())
+    }
+
+    func saveFaceRegistered() {
+        guard let docId = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(docId).updateData([
+            "face_id_registered": true
+        ]) { error in
+            if let error = error {
+                print("Face ID 등록 실패: \(error.localizedDescription)")
+            } else {
+                isRegistered = true
+                dismiss()
+            }
+        }
+    }
+}
+
+
+// Auto-login Extension
+extension Auth {
+    static func loginWithSavedCredentials(completion: @escaping (Bool) -> Void) {
+        if let email = UserDefaults.standard.string(forKey: "savedEmail"),
+           let password = UserDefaults.standard.string(forKey: "savedPassword") {
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                if let error = error {
+                    print("자동 로그인 실패: \(error.localizedDescription)")
+                    completion(false)
+                } else {
+                    completion(true)
+                }
+            }
+        } else {
+            completion(false)
+        }
+    }
+
+    static func saveCredentials(email: String, password: String) {
+        UserDefaults.standard.set(email, forKey: "savedEmail")
+        UserDefaults.standard.set(password, forKey: "savedPassword")
     }
 }
 
