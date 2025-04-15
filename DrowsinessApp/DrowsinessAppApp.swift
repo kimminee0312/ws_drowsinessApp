@@ -508,7 +508,8 @@ struct HistoryView: View {
     @State private var isLoading = true
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack() {
+            Spacer()
             
             Text("Drowsiness Detection History")
                 .font(.title2)
@@ -559,7 +560,7 @@ struct HistoryView: View {
 // Settings screen
 struct SettingsView: View {
     @Binding var isLoggedIn: Bool
-    @State private var faceIdRegistered = true // 임의로 등록 했다고 가정 =========================
+    @State private var faceIdRegistered = false // 임의로 등록 했다고 가정 =========================
     @State private var showFaceRegistration = false
 
     var body: some View {
@@ -662,45 +663,49 @@ struct FaceRegistrationView: View {
 
                 Spacer()
             }
-
-            Text("Register Your Face")
+            
+            Text("Register Face")
                 .font(.title2)
+                .foregroundColor(Color(.darkGray)) // 어두운 회색
                 .bold()
-
-            // 얼굴 촬영 기능 추가 예정 된다면
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .frame(height: 300)
-                .overlay(Text("Camera Preview Here"))
-
-            Button("Complete Registration") {
-                saveFaceRegistered()
+            
+            Spacer()
+            
+            Button("Face Registration Request") {
+                sendEmailToFastAPIServer()
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-
             Spacer()
         }
         .padding()
         .background(Color.white.ignoresSafeArea())
     }
 
-    func saveFaceRegistered() {
-        guard let docId = Auth.auth().currentUser?.uid else { return }
-        let db = Firestore.firestore()
-        db.collection("users").document(docId).updateData([
-            "face_id_registered": true
-        ]) { error in
-            if let error = error {
-                print("Face ID 등록 실패: \(error.localizedDescription)")
-            } else {
-                isRegistered = true
-                dismiss()
-            }
+    func sendEmailToFastAPIServer() {
+        guard let email = Auth.auth().currentUser?.email else {
+            print("====== 로그인된 이메일 없음 ======")
+            return
         }
+
+        let url = URL(string: "http://172.20.10.10:8000/email")!  // 여기에 서버 IP 주소
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: String] = ["email": email]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("====== 네트워크 에러: \(error.localizedDescription) ======")
+                return
+            }
+            if let httpResponse = response as? HTTPURLResponse {
+                print("====== FastAPI 응답 코드: \(httpResponse.statusCode) ======")
+            }
+            if let data = data, let responseText = String(data: data, encoding: .utf8) {
+                print("====== 서버 응답: \(responseText) ======")
+            }
+        }.resume()
     }
 }
 
