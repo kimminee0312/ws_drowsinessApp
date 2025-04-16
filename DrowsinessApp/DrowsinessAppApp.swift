@@ -686,7 +686,7 @@ struct FaceRegistrationView: View {
             return
         }
 
-        let url = URL(string: "http://172.20.10.10:8000/email")!  // 여기에 서버 IP 주소
+        let url = URL(string: "http://172.20.10.3:8000/email")!  // 여기에 서버 IP 주소
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
