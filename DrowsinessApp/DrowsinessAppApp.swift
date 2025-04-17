@@ -394,18 +394,27 @@ struct DashboardView: View {
     
     // DrowsinessDetector start sign
     func drowsinessDetector() {
-        let db = Firestore.firestore()
-        guard let docId = Auth.auth().currentUser?.uid else { return }
+        guard let email = Auth.auth().currentUser?.uid else { return }
+        
+        // prefix 추가
+        let prefixedEmail = "[drowsy]" + email
 
-        db.collection("users").document(docId).updateData([
-            "isActive": true
-        ]) { error in
+        // FastAPI 주소
+        let url = URL(string: "http://172.20.10.3:8000/start_drowsiness")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: String] = ["email": prefixedEmail]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("❌ Firestore 업데이트 실패: \(error.localizedDescription)")
+                print("❌ 졸음 인식 요청 실패: \(error.localizedDescription)")
             } else {
-                print("✅ 졸음 인식 시작 신호 전송됨")
+                print("✅ 졸음 인식 요청 전송 완료")
             }
-        }
+        }.resume()
     }
 }
 
@@ -685,13 +694,16 @@ struct FaceRegistrationView: View {
             print("====== 로그인된 이메일 없음 ======")
             return
         }
-
-        let url = URL(string: "http://172.20.10.3:8000/email")!  // 여기에 서버 IP 주소
+        //prefix 추가
+        let prefixedEmail = "[face]" + email
+        
+        //FastAPI 주소
+        let url = URL(string: "http://172.20.10.3:8000/face_register")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: String] = ["email": email]
+        let body: [String: String] = ["email": prefixedEmail]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
