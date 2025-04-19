@@ -376,9 +376,9 @@ struct DashboardView: View {
     }
     
     func checkFaceRegistrationAndStart() {
-        guard let docId = Auth.auth().currentUser?.uid else { return }
+        guard let Email = Auth.auth().currentUser?.email else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(docId).getDocument { snapshot, error in
+        db.collection("users").document(Email).getDocument { snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
                 if registered {
                     drowsinessDetector()
@@ -394,7 +394,7 @@ struct DashboardView: View {
     
     // DrowsinessDetector start sign
     func drowsinessDetector() {
-        guard let email = Auth.auth().currentUser?.uid else { return }
+        guard let email = Auth.auth().currentUser?.email else { return }
         
         // prefix 추가
         let prefixedEmail = "[drowsy]" + email
@@ -420,7 +420,7 @@ struct DashboardView: View {
 
 //DrowsinessDetector status sub screen
 struct StatusView: View {
-    @State private var drowsinessStatus: String = "로딩 중..."
+    @State private var drowsinessStatus: String = "System requesting..."
     @State private var hasReceivedStatus = false
     @State private var showFailureAlert = false
     @Binding var isPresented: Bool
@@ -442,7 +442,7 @@ struct StatusView: View {
             
             Spacer()
             
-            Text("졸음 인식 상태")
+            Text("System requesting...")
                 .font(.title2)
                 .bold()
                 .padding(.top)
@@ -457,8 +457,8 @@ struct StatusView: View {
                 Text(drowsinessStatus)
                     .font(.title)
                     // 포함되는 단어 들어오면 글씨 빨간색으로 변함
-                    .foregroundColor(drowsinessStatus.contains("drowsiness") ? .red : .blue)
-                    .foregroundColor(drowsinessStatus.contains("졸음") ? .red : .blue)
+                    .foregroundColor(drowsinessStatus.contains("하품") ? .red : .blue)
+                    .foregroundColor(drowsinessStatus.contains("감김") ? .red : .blue)
                     .bold()
             }
             
@@ -479,7 +479,7 @@ struct StatusView: View {
     }
     
     func listenToStatus() {
-        guard let docId = Auth.auth().currentUser?.uid else { return }
+        guard let docId = Auth.auth().currentUser?.email else { return }
         let docRef = Firestore.firestore().collection("users").document(docId)
         
         docRef.addSnapshotListener { snapshot, error in
@@ -496,9 +496,9 @@ struct StatusView: View {
         }
     }
     func stopDrowsinessDetector() {
-        guard let docId = Auth.auth().currentUser?.uid else { return }
+        guard let Email = Auth.auth().currentUser?.email else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(docId).updateData([
+        db.collection("users").document(Email).updateData([
             "isActive": false
         ]) { error in
             if let error = error {
@@ -548,7 +548,7 @@ struct HistoryView: View {
     }
 
     func loadHistory() {
-        guard let docId = Auth.auth().currentUser?.uid else { return }
+        guard let docId = Auth.auth().currentUser?.email else { return }
         let db = Firestore.firestore()
         db.collection("users").document(docId).collection("history")
             .order(by: "timestamp", descending: true)
@@ -633,7 +633,7 @@ struct SettingsView: View {
     }
 
     func loadFaceIdStatus() {
-        guard let docId = Auth.auth().currentUser?.uid else { return }
+        guard let docId = Auth.auth().currentUser?.email else { return }
         let db = Firestore.firestore()
         db.collection("users").document(docId).getDocument { snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
