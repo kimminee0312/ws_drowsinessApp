@@ -318,8 +318,8 @@ struct RegisterView: View {
                 errorMessage = error.localizedDescription
             } else if result?.user != nil {
                 let db = Firestore.firestore()
-                let docId = email.lowercased().replacingOccurrences(of: " ", with: "")
-                db.collection("users").document(docId).setData([
+                let Email = email.lowercased().replacingOccurrences(of: " ", with: "")
+                db.collection("users").document(Email).setData([
                     "First Name": firstName,
                     "Last Name": lastName,
                     "Birth": birth,
@@ -479,8 +479,8 @@ struct StatusView: View {
     }
     
     func listenToStatus() {
-        guard let docId = Auth.auth().currentUser?.email else { return }
-        let docRef = Firestore.firestore().collection("users").document(docId)
+        guard let Email = Auth.auth().currentUser?.email else { return }
+        let docRef = Firestore.firestore().collection("users").document(Email)
         
         docRef.addSnapshotListener { snapshot, error in
             if let data = snapshot?.data(), let status = data["status"] as? String {
@@ -548,9 +548,9 @@ struct HistoryView: View {
     }
 
     func loadHistory() {
-        guard let docId = Auth.auth().currentUser?.email else { return }
+        guard let Email = Auth.auth().currentUser?.email else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(docId).collection("history")
+        db.collection("users").document(Email).collection("history")
             .order(by: "timestamp", descending: true)
             .getDocuments { snapshot, error in
                 isLoading = false
@@ -633,9 +633,9 @@ struct SettingsView: View {
     }
 
     func loadFaceIdStatus() {
-        guard let docId = Auth.auth().currentUser?.email else { return }
+        guard let Email = Auth.auth().currentUser?.email else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(docId).getDocument { snapshot, error in
+        db.collection("users").document(Email).getDocument { snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
                 faceIdRegistered = registered
             }
@@ -695,7 +695,7 @@ struct FaceRegistrationView: View {
             return
         }
         //prefix 추가
-        let prefixedEmail = "[face]" + email
+        let prefixedEmail = "[face_register]" + email
         
         //FastAPI 주소
         let url = URL(string: "http://172.20.10.3:8000/face_register")!
