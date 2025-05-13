@@ -311,20 +311,26 @@ struct RegisterView: View {
             return
         }
         
+        
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("🔥 Firebase Error: \(error.localizedDescription)")
                 print("📦 Full error: \(error)") // 여기에 진짜 상세 정보 나옴
                 errorMessage = error.localizedDescription
-            } else if result?.user != nil {
+            } else if let user = result?.user {
+                let uid = user.uid
+                
                 let db = Firestore.firestore()
-                let Email = email.lowercased().replacingOccurrences(of: " ", with: "")
-                db.collection("users").document(Email).setData([
+                db.collection("users").document(uid).setData([
                     "First Name": firstName,
                     "Last Name": lastName,
                     "Birth": birth,
                     "Phone": phone,
-                    "Email": email
+                    "Email": email,
+                    "face_id_registered": false,
+                    "isActive": false,
+                    "drowsiness status": "Normal",
+                    "yawn status": "Normal"
                 ]) { error in
                     if let error = error {
                         errorMessage = error.localizedDescription
@@ -376,9 +382,10 @@ struct DashboardView: View {
     }
     
     func checkFaceRegistrationAndStart() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(Email).getDocument { snapshot, error in
+        
+        db.collection("users").document(uid).getDocument { snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
                 if registered {
                     drowsinessDetector()
@@ -394,10 +401,10 @@ struct DashboardView: View {
     
     // DrowsinessDetector start sign
     func drowsinessDetector() {
-        guard let email = Auth.auth().currentUser?.email else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         
         // prefix 추가
-        let prefixedEmail = "[drowsy]" + email
+        let prefixedUid = "[drowsy]" + uid
 
         // FastAPI 주소
         let url = URL(string: "http://172.20.10.3:8000/start_drowsiness")!
@@ -405,7 +412,7 @@ struct DashboardView: View {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: String] = ["email": prefixedEmail]
+        let body: [String: String] = ["uid": prefixedUid]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -479,8 +486,8 @@ struct StatusView: View {
     }
     
     func listenToStatus() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
-        let docRef = Firestore.firestore().collection("users").document(Email)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let docRef = Firestore.firestore().collection("users").document(uid)
         
         docRef.addSnapshotListener { snapshot, error in
             if let data = snapshot?.data(), let status = data["status"] as? String {
@@ -496,9 +503,9 @@ struct StatusView: View {
         }
     }
     func stopDrowsinessDetector() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(Email).updateData([
+        db.collection("users").document(uid).updateData([
             "isActive": false
         ]) { error in
             if let error = error {
@@ -548,9 +555,9 @@ struct HistoryView: View {
     }
 
     func loadHistory() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(Email).collection("history")
+        db.collection("users").document(uid).collection("history")
             .order(by: "timestamp", descending: true)
             .getDocuments { snapshot, error in
                 isLoading = false
@@ -628,19 +635,21 @@ struct SettingsView: View {
         .padding()
         .background(Color.white.ignoresSafeArea())
         .onAppear {
-            loadFaceIdStatus()
+            listenToFaceIdStatus()
         }
     }
 
-    func loadFaceIdStatus() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
-        let db = Firestore.firestore()
-        db.collection("users").document(Email).getDocument { snapshot, error in
-            if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
-                faceIdRegistered = registered
+    func listenToFaceIdStatus() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Firestore.firestore().collection("users").document(uid)
+            .addSnapshotListener { snapshot, error in
+                if let data = snapshot?.data(),
+                   let registered = data["face_id_registered"] as? Bool {
+                    faceIdRegistered = registered
+                }
             }
-        }
     }
+
     
     func logout() {
         do {
@@ -690,12 +699,12 @@ struct FaceRegistrationView: View {
     }
 
     func sendEmailToFastAPIServer() {
-        guard let email = Auth.auth().currentUser?.email else {
+        guard let uid = Auth.auth().currentUser?.uid else {
             print("====== 로그인된 이메일 없음 ======")
-            return
+            return		
         }
         //prefix 추가
-        let prefixedEmail = "[face_register]" + email
+        let prefixedUid = "[face_register]" + uid
         
         //FastAPI 주소
         let url = URL(string: "http://172.20.10.3:8000/face_register")!
@@ -703,7 +712,7 @@ struct FaceRegistrationView: View {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: String] = ["email": prefixedEmail]
+        let body: [String: String] = ["uid": prefixedUid]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
