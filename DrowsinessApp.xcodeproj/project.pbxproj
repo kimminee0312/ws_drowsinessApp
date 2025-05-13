@@ -36,8 +36,30 @@
 		792E8CA92DA44D6F00E91C8B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		792E8CB12DA456AB00E91C8B /* DrowsinessApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrowsinessApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79627CE22DA4DD9500AB38BB /* DrowsinessAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrowsinessAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		79627CE32DA4DD9500AB38BB /* DrowsinessAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrowsinessAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		79627CE32DA4DD9500AB38BB /* DrowsinessAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DrowsinessAppUITests.xctest; path = "/Users/youngrokson/Desktop/kimminee/DrowsinessApp/build/Debug-iphoneos/DrowsinessAppUITests-Runner.app/PlugIns/DrowsinessAppUITests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		79D6C1032DD3C17D00B94FA5 /* Exceptions for "views" folder in "DrowsinessApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Auth/AuthManager.swift,
+				Auth/LoginView.swift,
+				Auth/RegisterView.swift,
+				Auth/SplashView.swift,
+				Dashboard/DashboardView.swift,
+				DrowsinessDetection/DrowsinessStartView.swift,
+				DrowsinessDetection/StatusView.swift,
+				Insights/InsightsView.swift,
+				Insights/RecordView.swift,
+				Settings/FaceRegistrationView.swift,
+				Settings/SettingsView.swift,
+				Shared/CustomPlaceholderTextField.swift,
+				Shared/MainTabView.swift,
+			);
+			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		79D4A7432DA4493000C4DB52 /* DrowsinessApp */ = {
@@ -50,9 +72,12 @@
 			path = DrowsinessAppTests;
 			sourceTree = "<group>";
 		};
-		79D4A75B2DA4493400C4DB52 /* DrowsinessAppUITests */ = {
+		79D6C0DB2DD3B23400B94FA5 /* views */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DrowsinessAppUITests;
+			exceptions = (
+				79D6C1032DD3C17D00B94FA5 /* Exceptions for "views" folder in "DrowsinessApp" target */,
+			);
+			path = views;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -97,14 +122,13 @@
 		79D4A7382DA4493000C4DB52 = {
 			isa = PBXGroup;
 			children = (
+				79D6C0DB2DD3B23400B94FA5 /* views */,
 				79D4A7432DA4493000C4DB52 /* DrowsinessApp */,
 				79D4A7512DA4493300C4DB52 /* DrowsinessAppTests */,
-				79D4A75B2DA4493400C4DB52 /* DrowsinessAppUITests */,
 				792E8CA92DA44D6F00E91C8B /* GoogleService-Info.plist */,
 				792E8CAC2DA453E100E91C8B /* Frameworks */,
 				792E8CB12DA456AB00E91C8B /* DrowsinessApp.app */,
 				79627CE22DA4DD9500AB38BB /* DrowsinessAppTests.xctest */,
-				79627CE32DA4DD9500AB38BB /* DrowsinessAppUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -173,9 +197,6 @@
 			);
 			dependencies = (
 				79D4A75A2DA4493400C4DB52 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				79D4A75B2DA4493400C4DB52 /* DrowsinessAppUITests */,
 			);
 			name = DrowsinessAppUITests;
 			packageProductDependencies = (
