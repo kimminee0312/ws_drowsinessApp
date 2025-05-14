@@ -38,12 +38,12 @@ struct FaceRegistrationView: View {
     }
 
     func sendEmailToFastAPIServer() {
-        guard let email = Auth.auth().currentUser?.email else {
+        guard let uid = Auth.auth().currentUser?.uid else {
             print("====== 로그인된 이메일 없음 ======")
             return
         }
         //prefix 추가
-        let prefixedEmail = "[face_register]" + email
+        let prefixedUid = "[face_register]" + uid
         
         //FastAPI 주소
         let url = URL(string: "http://172.20.10.3:8000/face_register")!
@@ -51,7 +51,7 @@ struct FaceRegistrationView: View {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: String] = ["email": prefixedEmail]
+        let body: [String: String] = ["uid": prefixedUid]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in

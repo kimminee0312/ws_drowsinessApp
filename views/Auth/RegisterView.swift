@@ -134,10 +134,10 @@ struct RegisterView: View {
                 print("🔥 Firebase Error: \(error.localizedDescription)")
                 print("📦 Full error: \(error)") // 여기에 진짜 상세 정보 나옴
                 errorMessage = error.localizedDescription
-            } else if result?.user != nil {
+            } else if let user = result?.user {
                 let db = Firestore.firestore()
-                let Email = email.lowercased().replacingOccurrences(of: " ", with: "")
-                db.collection("users").document(Email).setData([
+                let Uid = user.uid
+                db.collection("users").document(Uid).setData([
                     "First Name": firstName,
                     "Last Name": lastName,
                     "Birth": birth,

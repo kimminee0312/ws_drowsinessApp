@@ -41,9 +41,9 @@ struct DrowsinessStartView: View {
     }
     
     func checkFaceRegistrationAndStart() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
+        guard let Uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(Email).getDocument { snapshot, error in
+        db.collection("users").document(Uid).getDocument { snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
                 if registered {
                     drowsinessDetector()
@@ -59,10 +59,10 @@ struct DrowsinessStartView: View {
     
     // DrowsinessDetector start sign
     func drowsinessDetector() {
-        guard let email = Auth.auth().currentUser?.email else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         
         // prefix 추가
-        let prefixedEmail = "[drowsy]" + email
+        let prefixedUid = "[drowsy]" + uid
 
         // FastAPI 주소
         let url = URL(string: "http://172.20.10.3:8000/start_drowsiness")!
@@ -70,7 +70,7 @@ struct DrowsinessStartView: View {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: String] = ["email": prefixedEmail]
+        let body: [String: String] = ["uid": prefixedUid]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
