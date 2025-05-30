@@ -6,16 +6,31 @@ import FirebaseFirestore
 struct DrowsinessStartView: View {
     @State private var showStatusScreen = false
     @State private var showFaceRegistrationAlert = false
+    
+    // Segmented Picker 메뉴용 상태 변수
+    @State private var selectedMode = "Default Mode"
+    let modes = ["Default Mode", "Emotion-Based Mode"]
 
     var body: some View {
-        VStack() {
+        VStack(spacing: 20) {
             Spacer()
             
             Text("Drowsiness Dector")
                 .font(.title2)
                 .foregroundColor(Color(.darkGray)) // 어두운 회색
                 .bold()
+            
+            // Segmented Picker
+            Picker("Mode", selection: $selectedMode) {
+                ForEach(modes, id: \.self) { mode in
+                    Text(mode)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .tint(.blue)
+            .padding(.horizontal)
 
+            // System Start 버튼
             Button(action: {
                 checkFaceRegistrationAndStart()
             }) {
@@ -63,6 +78,7 @@ struct DrowsinessStartView: View {
         
         // prefix 추가
         let prefixedUid = "[drowsy]" + uid
+        let modeKey = (selectedMode == "Emotion Mode") ? "emotion" : "default"
 
         // FastAPI 주소
         let url = URL(string: "http://172.20.10.3:8000/start_drowsiness")!
@@ -70,7 +86,10 @@ struct DrowsinessStartView: View {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body: [String: String] = ["uid": prefixedUid]
+        let body: [String: String] = [
+            "uid": prefixedUid,
+            "mode": modeKey
+        ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
         URLSession.shared.dataTask(with: request) { data, response, error in

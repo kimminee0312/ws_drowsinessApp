@@ -82,8 +82,8 @@ struct RegisterView: View {
                         .padding(.horizontal)
                         .background(Color(UIColor.lightGray).opacity(0.2))
                         .cornerRadius(8)
-                        .onChange(of: password) { newValue in
-                            isPasswordEntered = !newValue.isEmpty
+                        .onChange(of: password) {
+                            isPasswordEntered = !$0.isEmpty
                         }
                     
                     if isPasswordEntered{

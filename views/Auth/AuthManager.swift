@@ -10,7 +10,7 @@ extension Auth {
            let password = UserDefaults.standard.string(forKey: "savedPassword") {
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
                 if let error = error {
-                    completion(false)
+                  print(error.localizedDescription)
                 } else {
                     completion(true)
                 }

@@ -3,6 +3,35 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
+func sendEndDrowsinessRequest(uid: String, completion: @escaping (Bool) -> Void) {
+    guard let url = URL(string: "http://172.20.10:8000/end_drowsiness") else {
+        completion(false)
+        return
+    }
+
+    let payload = ["uid": uid]
+    guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
+        completion(false)
+        return
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.httpBody = jsonData
+
+    URLSession.shared.dataTask(with: request) { _, response, error in
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+            print("✅ end_drowsiness 요청 완료")
+            completion(true)
+        } else {
+            print("❌ end_drowsiness 요청 실패:", error?.localizedDescription ?? "unknown")
+            completion(false)
+        }
+    }.resume()
+}
+
+
 struct StatusView: View {
     @State private var drowsinessStatus: String = "System requesting..."
     @State private var hasReceivedStatus = false
@@ -12,18 +41,6 @@ struct StatusView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            HStack {
-                Button(action: {
-                    dismiss()
-                }) {
-                    Label("Back", systemImage: "chevron.left")
-                        .foregroundColor(.blue)
-                }
-                .padding()
-
-                Spacer()
-            }
-            
             Spacer()
             
             Text("System requesting...")
@@ -48,14 +65,34 @@ struct StatusView: View {
             
             Spacer()
             
-            Button(action: stopDrowsinessDetector) {
-                Text("System Stop")
+            Button(action: {
+                if let user = Auth.auth().currentUser {
+                    let uid = user.uid
+
+                    // 1. ROS 2 종료 요청 → FastAPI
+                    sendEndDrowsinessRequest(uid: uid) { success in
+                        if success {
+                            // 2. Firebase 비활성화 플래그
+                            stopDrowsinessDetector()
+                            
+                            // 3. 화면 닫기
+                            DispatchQueue.main.async {
+                                dismiss()
+                            }
+                        } else {
+                            print("❗️종료 요청 실패")
+                        }
+                    }
+                }
+            }) {
+                Text("Stop System")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.gray)
+                    .background(Color.gray.opacity(0.8))
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
+
         }
         .padding()
         .onAppear(perform: listenToStatus)
@@ -63,26 +100,26 @@ struct StatusView: View {
     }
     
     func listenToStatus() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
-        let docRef = Firestore.firestore().collection("users").document(Email)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let docRef = Firestore.firestore().collection("users").document(uid)
         
         docRef.addSnapshotListener { snapshot, error in
-            if let data = snapshot?.data(), let status = data["status"] as? String {
-                drowsinessStatus = status
+            if let data = snapshot?.data(), let alertStatus = data["alert_status"] as? String {
+                drowsinessStatus = alertStatus
                 hasReceivedStatus = true
             }
         }
-        //5초 안에 status가 안 오면 실패 간주
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        //20초 안에 status가 안 오면 실패 간주
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
             if !hasReceivedStatus {
                 showFailureAlert = true
             }
         }
     }
     func stopDrowsinessDetector() {
-        guard let Email = Auth.auth().currentUser?.email else { return }
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(Email).updateData([
+        db.collection("users").document(uid).updateData([
             "isActive": false
         ]) { error in
             if let error = error {

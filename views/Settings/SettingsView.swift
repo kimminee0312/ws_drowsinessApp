@@ -2,11 +2,13 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
+import AVFoundation
 
 struct SettingsView: View {
     @Binding var isLoggedIn: Bool
     @State private var faceIdRegistered = false // 임의로 등록 했다고 가정 =========================
     @State private var showFaceRegistration = false
+    @State private var showNotificationSettingsView = false
 
     var body: some View {
         VStack(spacing: 20) {
@@ -50,11 +52,25 @@ struct SettingsView: View {
                 .cornerRadius(10)
             }
             
+            Button(action: {
+                showNotificationSettingsView = true
+            }) {
+                Text("Notification Settings")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .sheet(isPresented: $showNotificationSettingsView) {
+                NotificationSettingsView()
+            }
+            
             Button(action: logout) {
                 Text("Logout")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.gray)
+                    .background(Color.gray.opacity(80))
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }

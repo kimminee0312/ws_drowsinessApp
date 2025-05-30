@@ -35,8 +35,8 @@
 /* Begin PBXFileReference section */
 		792E8CA92DA44D6F00E91C8B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		792E8CB12DA456AB00E91C8B /* DrowsinessApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrowsinessApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		79627CE22DA4DD9500AB38BB /* DrowsinessAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrowsinessAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		79627CE32DA4DD9500AB38BB /* DrowsinessAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = DrowsinessAppUITests.xctest; path = "/Users/youngrokson/Desktop/kimminee/DrowsinessApp/build/Debug-iphoneos/DrowsinessAppUITests-Runner.app/PlugIns/DrowsinessAppUITests.xctest"; sourceTree = "<absolute>"; };
+		79E65E992DE98F60007B6084 /* DrowsinessAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrowsinessAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		79E65E9A2DE98F60007B6084 /* DrowsinessAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrowsinessAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,12 +50,19 @@
 				Dashboard/DashboardView.swift,
 				DrowsinessDetection/DrowsinessStartView.swift,
 				DrowsinessDetection/StatusView.swift,
-				Insights/InsightsView.swift,
-				Insights/RecordView.swift,
+				insights/InsightsView.swift,
 				Settings/FaceRegistrationView.swift,
+				Settings/NotificationSettingsView.swift.swift,
 				Settings/SettingsView.swift,
 				Shared/CustomPlaceholderTextField.swift,
 				Shared/MainTabView.swift,
+			);
+			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
+		};
+		79E65E802DE70E24007B6084 /* Exceptions for "sound" folder in "DrowsinessApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				drowsy_alert.mp3,
 			);
 			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
 		};
@@ -67,17 +74,20 @@
 			path = DrowsinessApp;
 			sourceTree = "<group>";
 		};
-		79D4A7512DA4493300C4DB52 /* DrowsinessAppTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DrowsinessAppTests;
-			sourceTree = "<group>";
-		};
 		79D6C0DB2DD3B23400B94FA5 /* views */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				79D6C1032DD3C17D00B94FA5 /* Exceptions for "views" folder in "DrowsinessApp" target */,
 			);
 			path = views;
+			sourceTree = "<group>";
+		};
+		79E65E7E2DE70DE6007B6084 /* sound */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				79E65E802DE70E24007B6084 /* Exceptions for "sound" folder in "DrowsinessApp" target */,
+			);
+			path = sound;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -122,13 +132,14 @@
 		79D4A7382DA4493000C4DB52 = {
 			isa = PBXGroup;
 			children = (
+				79E65E7E2DE70DE6007B6084 /* sound */,
 				79D6C0DB2DD3B23400B94FA5 /* views */,
 				79D4A7432DA4493000C4DB52 /* DrowsinessApp */,
-				79D4A7512DA4493300C4DB52 /* DrowsinessAppTests */,
 				792E8CA92DA44D6F00E91C8B /* GoogleService-Info.plist */,
 				792E8CAC2DA453E100E91C8B /* Frameworks */,
 				792E8CB12DA456AB00E91C8B /* DrowsinessApp.app */,
-				79627CE22DA4DD9500AB38BB /* DrowsinessAppTests.xctest */,
+				79E65E992DE98F60007B6084 /* DrowsinessAppTests.xctest */,
+				79E65E9A2DE98F60007B6084 /* DrowsinessAppUITests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -175,14 +186,11 @@
 			dependencies = (
 				79D4A7502DA4493300C4DB52 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				79D4A7512DA4493300C4DB52 /* DrowsinessAppTests */,
-			);
 			name = DrowsinessAppTests;
 			packageProductDependencies = (
 			);
 			productName = DrowsinessAppTests;
-			productReference = 79627CE22DA4DD9500AB38BB /* DrowsinessAppTests.xctest */;
+			productReference = 79E65E992DE98F60007B6084 /* DrowsinessAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		79D4A7572DA4493400C4DB52 /* DrowsinessAppUITests */ = {
@@ -202,7 +210,7 @@
 			packageProductDependencies = (
 			);
 			productName = DrowsinessAppUITests;
-			productReference = 79627CE32DA4DD9500AB38BB /* DrowsinessAppUITests.xctest */;
+			productReference = 79E65E9A2DE98F60007B6084 /* DrowsinessAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -445,14 +453,16 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KX43M3HVGX;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DrowsinessApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -475,14 +485,16 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KX43M3HVGX;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DrowsinessApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
