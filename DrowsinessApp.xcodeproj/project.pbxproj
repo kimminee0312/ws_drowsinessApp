@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		792E8CAA2DA44D6F00E91C8B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 792E8CA92DA44D6F00E91C8B /* GoogleService-Info.plist */; };
 		792E8CAE2DA453E100E91C8B /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 792E8CAD2DA453E100E91C8B /* FirebaseCore */; };
 		792E8CB02DA453ED00E91C8B /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 792E8CAF2DA453ED00E91C8B /* FirebaseFirestore */; };
 		79BD8C002DAB9C76007C4944 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 79BD8BFF2DAB9C76007C4944 /* FirebaseAuth */; };
@@ -54,6 +53,7 @@
 				Settings/FaceRegistrationView.swift,
 				Settings/NotificationSettingsView.swift.swift,
 				Settings/SettingsView.swift,
+				Shared/AppConfig.swift,
 				Shared/CustomPlaceholderTextField.swift,
 				Shared/MainTabView.swift,
 			);
@@ -66,11 +66,21 @@
 			);
 			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
 		};
+		79E65EA42DEC29E1007B6084 /* Exceptions for "DrowsinessApp" folder in "DrowsinessApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		79D4A7432DA4493000C4DB52 /* DrowsinessApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				79E65EA42DEC29E1007B6084 /* Exceptions for "DrowsinessApp" folder in "DrowsinessApp" target */,
+			);
 			path = DrowsinessApp;
 			sourceTree = "<group>";
 		};
@@ -265,7 +275,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				792E8CAA2DA44D6F00E91C8B /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

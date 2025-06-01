@@ -3,35 +3,6 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
-func sendEndDrowsinessRequest(uid: String, completion: @escaping (Bool) -> Void) {
-    guard let url = URL(string: "http://172.20.10:8000/end_drowsiness") else {
-        completion(false)
-        return
-    }
-
-    let payload = ["uid": uid]
-    guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
-        completion(false)
-        return
-    }
-
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.httpBody = jsonData
-
-    URLSession.shared.dataTask(with: request) { _, response, error in
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
-            print("✅ end_drowsiness 요청 완료")
-            completion(true)
-        } else {
-            print("❌ end_drowsiness 요청 실패:", error?.localizedDescription ?? "unknown")
-            completion(false)
-        }
-    }.resume()
-}
-
-
 struct StatusView: View {
     @State private var drowsinessStatus: String = "System requesting..."
     @State private var hasReceivedStatus = false
@@ -72,7 +43,7 @@ struct StatusView: View {
                     // 1. ROS 2 종료 요청 → FastAPI
                     sendEndDrowsinessRequest(uid: uid) { success in
                         if success {
-                            // 2. Firebase 비활성화 플래그
+                            // 2. Firebase에 isActive=false 업데이트
                             stopDrowsinessDetector()
                             
                             // 3. 화면 닫기
@@ -116,6 +87,35 @@ struct StatusView: View {
             }
         }
     }
+    
+    func sendEndDrowsinessRequest(uid: String, completion: @escaping (Bool) -> Void) {
+        let baseURL = AppConfig.shared.serverBaseURL
+        guard let url = URL(string: "\(baseURL)/end_drowsiness") else {
+            completion(false)
+            return
+        }
+        let payload = ["uid": uid]
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
+            completion(false)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("✅ end_drowsiness 요청 완료")
+                completion(true)
+            } else {
+                print("❌ end_drowsiness 요청 실패:", error?.localizedDescription ?? "unknown")
+                completion(false)
+            }
+        }.resume()
+    }
+    
     func stopDrowsinessDetector() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
@@ -130,4 +130,12 @@ struct StatusView: View {
             }
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
 }

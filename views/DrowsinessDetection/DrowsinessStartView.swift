@@ -58,7 +58,8 @@ struct DrowsinessStartView: View {
     func checkFaceRegistrationAndStart() {
         guard let Uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
-        db.collection("users").document(Uid).getDocument { snapshot, error in
+        db.collection("users").document(Uid).getDocument {
+            snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
                 if registered {
                     drowsinessDetector()
@@ -81,7 +82,8 @@ struct DrowsinessStartView: View {
         let modeKey = (selectedMode == "Emotion Mode") ? "emotion" : "default"
 
         // FastAPI 주소
-        let url = URL(string: "http://172.20.10.3:8000/start_drowsiness")!
+        let baseURL = AppConfig.shared.serverBaseURL
+        let url = URL(string: "\(baseURL)/start_drowsiness")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

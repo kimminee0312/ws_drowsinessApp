@@ -46,7 +46,8 @@ struct FaceRegistrationView: View {
         let prefixedUid = "[face_register]" + uid
         
         //FastAPI 주소
-        let url = URL(string: "http://172.20.10.3:8000/face_register")!
+        let baseURL = AppConfig.shared.serverBaseURL
+        let url = URL(string: "\(baseURL)/face_register")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
