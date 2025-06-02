@@ -1,8 +1,8 @@
 //  DrowsinessAppApp.swift
 //  DrowsinessApp
 
-import SwiftUI
 import Firebase
+import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
