@@ -5,7 +5,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleDisplayName</key>
-	<string>DrowsyDetection</string>
+	<string>Drowsy Detection</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.kml.drowsyApp.DrowsinessApp.v3</string>
 	<key>CFBundleName</key>

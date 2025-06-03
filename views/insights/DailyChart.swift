@@ -19,11 +19,14 @@ struct DailyChart: View {
         // ② modifier 들은 core 에 차례로 적용
         let decorated = core
             .chartYScale(domain: 0...100)
-            .chartPlotStyle { $0.padding(.vertical, 20) }
+            .chartPlotStyle { plotArea in          // ② 하단 패딩 최소화
+                plotArea.padding(.top, 20)         // 상단만 20pt
+            }
             .chartScrollableAxes(.horizontal)
             .chartXVisibleDomain(length: 7 * 86_400.0)
+            // summaries 에 있는 날짜만 전달 → 점이 있는 날만 라벨
             .chartXAxis {
-                AxisMarks(values: .stride(by: .day)) {
+                AxisMarks(values: summaries.map(\.date)) { _ in
                     AxisGridLine()
                     AxisValueLabel(format: .dateTime.day())
                         .font(.caption2)
@@ -58,4 +61,42 @@ struct DailyChart: View {
     
     // body 는 이미 타입 결정된 wrappedChart 만 반환
     var body: some View { wrappedChart }
+}
+
+struct ChartMarksView: ChartContent {
+    let day: DailySummary
+    let isSelected: Bool
+    
+    var body: some ChartContent {
+        LineMark(
+            x: .value("날짜", day.date),
+            y: .value("점수", day.safeAvg)
+        )
+        .foregroundStyle(.blue)
+        .lineStyle(.init(lineWidth: 2))
+        
+        PointMark(
+            x: .value("날짜", day.date),
+            y: .value("점수", day.safeAvg)
+        )
+        .foregroundStyle(isSelected ? .red : .blue)
+        .symbolSize(isSelected ? 44 : 28)
+        
+        if isSelected {
+            PointMark(
+                x: .value("날짜", day.date),
+                y: .value("점수", day.safeAvg)
+            )
+            .annotation(position: .bottom) {
+                VStack(spacing: 2) {
+                    Text(String(format: "%.0f", day.safeAvg))
+                        .font(.caption2)
+                        .foregroundColor(.blue)
+                }
+                .padding(4)
+                .background(.white.opacity(0.9))
+                .cornerRadius(4)
+            }
+        }
+    }
 }

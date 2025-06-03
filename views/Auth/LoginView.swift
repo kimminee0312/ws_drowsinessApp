@@ -19,6 +19,10 @@ struct LoginView: View {
                 Spacer()
                 
                 VStack(spacing: 20) {
+                    Text("Drowsiness Detector")
+                        .bold()
+                        .foregroundColor(Color(.darkGray)) // 어두운 회색
+                        .font(.title2)
                     
                     CustomPlaceholderTextField(placeholder: "Email", text: $email)
                         .frame(height: 44)

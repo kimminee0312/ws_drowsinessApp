@@ -9,11 +9,9 @@ struct BlinkYawnStatsViewDaily: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            row("평균 안전 점수",  String(format: "%.0f", day.safeAvg))
-            row("눈 감김 합계",   "\(day.blinkTotal)")
-            row("하품 합계",     "\(day.yawnTotal)")
-            row("평균 하품시간", String(format: "%.1f 초", day.yawnAvgDur))
-            if let p = day.peakTime { row("피크 졸음", p) }
+            row("눈 감김 총 횟수",   "\(day.blinkTotal) 회")
+            row("하품 총 횟수",     "\(day.yawnTotal) 회")
+            row("평균 하품 지속 시간", String(format: "%.1f 초", day.yawnAvgDur))
         }
         .padding()
         .background(cardBg)

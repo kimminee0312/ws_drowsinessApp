@@ -8,6 +8,10 @@ struct InsightsView: View {
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
+            Text("Insights")
+                .font(.title2)
+                .bold()
+                .foregroundColor(Color(.darkGray)) // 어두운 회색
             
             Text(vm.uid.isEmpty ? "UID 준비 중…" : "UID 확인 완료")
                 .foregroundColor(.gray)
@@ -37,37 +41,3 @@ struct InsightsView: View {
     }
 }
 
-struct StatisticsView: View {
-    @EnvironmentObject var vm: SessionViewModel
-    @State private var selDay: DailySummary? = nil
-    
-    var body: some View {
-        NavigationView {
-            Group {
-                if vm.dailySummaries.isEmpty {
-                    ProgressView("데이터 불러오는 중…")
-                } else {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        DateChartView(summaries: vm.dailySummaries,
-                                      selectedSummary: $selDay)
-                            .padding(.top, 16)
-                        Divider().padding(.vertical, 8)
-                        if let d = selDay {
-                            BlinkYawnStatsViewDaily(day: d)
-                                .padding(.bottom, 16)
-                        } else {
-                            Text("날짜를 탭해주세요")
-                                .foregroundColor(.gray)
-                                .padding(.top, 20)
-                        }
-                        Spacer()
-                    }
-                }
-            }
-            .background(Color.white)
-            .navigationBarHidden(true)
-        }
-        .background(Color.white.ignoresSafeArea())
-    }
-}
