@@ -2,46 +2,72 @@ import SwiftUI
 import FirebaseAuth
 
 struct InsightsView: View {
-    // 로그인된 사용자의 UID
-    @State private var uid: String = Auth.auth().currentUser?.uid ?? ""
-
-    // ViewModel
-    @StateObject private var viewModel: SessionViewModel
-
-    // 탭된 세션
-    @State private var selectedSession: SessionData? = nil
-
-    init() {
-        let currentUID = Auth.auth().currentUser?.uid ?? ""
-        _viewModel = StateObject(wrappedValue: SessionViewModel(uid: currentUID))
+    @EnvironmentObject var vm: SessionViewModel
+    @State private var showStats = false
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+            
+            Text(vm.uid.isEmpty ? "UID 준비 중…" : "UID 확인 완료")
+                .foregroundColor(.gray)
+            
+            Button("Check Data") {
+                if vm.uid.isEmpty,
+                   let u = Auth.auth().currentUser?.uid { vm.uid = u }
+                guard !vm.uid.isEmpty else { return }
+                showStats = true
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(vm.uid.isEmpty ? Color.gray.opacity(0.4) : .blue)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+            .disabled(vm.uid.isEmpty)
+            
+            Spacer()
+        }
+        .padding()
+        .preferredColorScheme(.light)
+        .background(Color.white.ignoresSafeArea())
+        .sheet(isPresented: $showStats) {
+            StatisticsView()
+                .environmentObject(vm)
+        }
     }
+}
 
+struct StatisticsView: View {
+    @EnvironmentObject var vm: SessionViewModel
+    @State private var selDay: DailySummary? = nil
+    
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // ◈ 4-1: 날짜별 안전 점수 차트
-                DateChartView(
-                    sessions: viewModel.sessions,
-                    selectedSession: $selectedSession
-                )
-                .padding(.top, 16)
-
-                Divider().padding(.vertical, 8)
-
-                // ◈ 4-2: 탭된 세션이 있으면 통계 뷰 보여주기
-                if let sel = selectedSession {
-                    BlinkYawnStatsView(session: sel)
-                        .padding(.bottom, 16)
+            Group {
+                if vm.dailySummaries.isEmpty {
+                    ProgressView("데이터 불러오는 중…")
                 } else {
-                    Text("날짜를 탭해 주세요.")
-                        .foregroundColor(.gray)
-                        .padding(.top, 20)
+                    VStack(spacing: 0) {
+                        Spacer()
+                        DateChartView(summaries: vm.dailySummaries,
+                                      selectedSummary: $selDay)
+                            .padding(.top, 16)
+                        Divider().padding(.vertical, 8)
+                        if let d = selDay {
+                            BlinkYawnStatsViewDaily(day: d)
+                                .padding(.bottom, 16)
+                        } else {
+                            Text("날짜를 탭해주세요")
+                                .foregroundColor(.gray)
+                                .padding(.top, 20)
+                        }
+                        Spacer()
+                    }
                 }
-
-                Spacer()
             }
-            .background(Color.white.ignoresSafeArea())
-            .navigationTitle("인사이트")
+            .background(Color.white)
+            .navigationBarHidden(true)
         }
+        .background(Color.white.ignoresSafeArea())
     }
 }

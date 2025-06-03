@@ -50,6 +50,8 @@
 				DrowsinessDetection/DrowsinessStartView.swift,
 				DrowsinessDetection/StatusView.swift,
 				insights/BlinkYawnStatsView.swift,
+				insights/ChartMarksView.swift,
+				insights/DailyChart.swift,
 				insights/DateChartView.swift,
 				insights/InsightsView.swift,
 				insights/Model.swift,
@@ -67,6 +69,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				drowsy_alert.mp3,
+				negative_alert.mp3,
+				negative_message.mp3,
+				positive_alert.mp3,
+				positive_message.mp3,
 			);
 			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
 		};

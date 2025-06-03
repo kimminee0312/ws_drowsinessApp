@@ -1,56 +1,32 @@
-//선택된 세션 하나만 받아와 정리
-//날짜, 안전점수, 피로점수, 피크 졸음 시간, 눈 가김 횟수, 하품 횟수, 평균 하품 시간
 import SwiftUI
 
-struct BlinkYawnStatsView: View {
-    let session: SessionData
-
+struct BlinkYawnStatsViewDaily: View {
+    let day: DailySummary
+    
+    private let labelColor = Color(.darkGray)
+    private let valueColor = Color(.darkGray)
+    private let cardBg     = Color(.systemGray6)
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("날짜:")
-                    .foregroundColor(Color(UIColor.darkGray))
-                if let date = session.date {
-                    Text("\(date, formatter: dateFormatter)")
-                        .foregroundColor(Color(UIColor.darkGray))
-                }
-                Spacer()
-            }
-
-            HStack {
-                Text("안전 점수: \(session.safe_score)")
-                    .foregroundColor(Color(UIColor.darkGray))
-                Spacer()
-                Text("피로 점수: \(session.fatigue_score)")
-                    .foregroundColor(Color(UIColor.darkGray))
-            }
-
-            HStack {
-                Text("눈 감김: \(session.drowsy_eye_closed)회")
-                    .foregroundColor(Color(UIColor.darkGray))
-                Spacer()
-                Text("하품: \(session.yawns)회")
-                    .foregroundColor(Color(UIColor.darkGray))
-            }
-
-            HStack {
-                Text("평균 하품 시간: \(String(format: "%.1f", session.avg_yawn_duration))초")
-                    .foregroundColor(Color(UIColor.darkGray))
-                Spacer()
-                Text("피크 졸음 시간: \(session.peak_drowsy_time)")
-                    .foregroundColor(Color(UIColor.darkGray))
-            }
+        VStack(alignment: .leading, spacing: 10) {
+            row("평균 안전 점수",  String(format: "%.0f", day.safeAvg))
+            row("눈 감김 합계",   "\(day.blinkTotal)")
+            row("하품 합계",     "\(day.yawnTotal)")
+            row("평균 하품시간", String(format: "%.1f 초", day.yawnAvgDur))
+            if let p = day.peakTime { row("피크 졸음", p) }
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(8)
-        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 1)
-        .padding(.horizontal, 16)
+        .background(cardBg)
+        .cornerRadius(12)
+        .padding(.horizontal, 8)
     }
-
-    private var dateFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
+    
+    @ViewBuilder
+    private func row(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text(label).foregroundColor(labelColor)
+            Spacer()
+            Text(value).bold().foregroundColor(valueColor)
+        }
     }
 }

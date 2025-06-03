@@ -1,4 +1,3 @@
-// Model.swift
 import Foundation
 import FirebaseFirestore
 
@@ -12,17 +11,11 @@ struct SessionData: Identifiable, Codable {
     let peak_drowsy_time: String
     let fatigue_score: Int
     let safe_score: Int
-    var date: Date?
+    var date: Date?          // 상위 문서 날짜 주입용
     
     enum CodingKeys: String, CodingKey {
-        case id
-        case start_time
-        case end_time
-        case drowsy_eye_closed
-        case yawns
-        case avg_yawn_duration
-        case peak_drowsy_time
-        case fatigue_score
-        case safe_score
+        case id, start_time, end_time,
+             drowsy_eye_closed, yawns, avg_yawn_duration,
+             peak_drowsy_time, fatigue_score, safe_score
     }
 }

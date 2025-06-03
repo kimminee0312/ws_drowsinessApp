@@ -19,14 +19,14 @@ struct NotificationSettingsView: View {
                 Section(header: Text("기분 안 좋을 때 알림")) {
                     Toggle("알림 사용", isOn: $badMoodAlert)
                     Button("사운드 재생") {
-                        SoundPlayer.shared.play(fileName: "bad_mood_alert")
+                        SoundPlayer.shared.play(fileName: "negative_message")
                     }
                 }
 
                 Section(header: Text("기분 좋을 때 알림")) {
                     Toggle("알림 사용", isOn: $goodMoodAlert)
                     Button("사운드 재생") {
-                        SoundPlayer.shared.play(fileName: "good_mood_alert")
+                        SoundPlayer.shared.play(fileName: "positive_alert")
                     }
                 }
             }
