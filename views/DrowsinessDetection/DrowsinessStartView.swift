@@ -5,14 +5,15 @@ import FirebaseFirestore
 
 struct DrowsinessStartView: View {
     @State private var showStatusScreen = false
+    @State private var showEmotionStatusScreen = false
     @State private var showFaceRegistrationAlert = false
     
     // Segmented Picker 메뉴용 상태 변수
     @State private var selectedMode = "Default Mode"
-    let modes = ["Default Mode", "Emotion-Based Mode"]
+    let modes = ["Drowsy-Dect Mode", "Emotion-Based Mode"]
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 5) {
             Spacer()
             
             Text("Drowsiness Dector")
@@ -20,6 +21,11 @@ struct DrowsinessStartView: View {
                 .foregroundColor(Color(.darkGray)) // 어두운 회색
                 .bold()
             
+            Text("Select Mode")
+                .font(.footnote)
+                .foregroundColor(.gray)
+                .padding(.top, 20)
+
             // Segmented Picker
             Picker("Mode", selection: $selectedMode) {
                 ForEach(modes, id: \.self) { mode in
@@ -29,6 +35,7 @@ struct DrowsinessStartView: View {
             .pickerStyle(SegmentedPickerStyle())
             .tint(.blue)
             .padding(.horizontal)
+            .padding(.bottom, 5)
 
             // System Start 버튼
             Button(action: {
@@ -50,6 +57,10 @@ struct DrowsinessStartView: View {
         .fullScreenCover(isPresented: $showStatusScreen) {
             StatusView(isPresented: $showStatusScreen)
         }
+        .fullScreenCover(isPresented: $showEmotionStatusScreen) {
+            EmotionStatusView(isPresented: $showEmotionStatusScreen)
+        }
+
         .alert(isPresented: $showFaceRegistrationAlert) {
             Alert(title: Text("Face not registered"), message: Text("Please register your face first"), dismissButton: .default(Text("check")))
         }
@@ -62,8 +73,13 @@ struct DrowsinessStartView: View {
             snapshot, error in
             if let data = snapshot?.data(), let registered = data["face_id_registered"] as? Bool {
                 if registered {
-                    drowsinessDetector()
-                    showStatusScreen = true
+                    if selectedMode == "Drowsy-Dect Mode" {
+                        drowsinessDetector()
+                        showStatusScreen = true
+                    } else if selectedMode == "Emotion-Based Mode" {
+                        emotionDetector()
+                        showEmotionStatusScreen = true
+                    }
                 } else {
                     showFaceRegistrationAlert = true
                 }
@@ -77,11 +93,8 @@ struct DrowsinessStartView: View {
     func drowsinessDetector() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        // prefix 추가
         let prefixedUid = "[drowsy]" + uid
-        let modeKey = (selectedMode == "Emotion Mode") ? "emotion" : "default"
 
-        // FastAPI 주소
         let baseURL = AppConfig.shared.serverBaseURL
         let url = URL(string: "\(baseURL)/start_drowsiness")!
         var request = URLRequest(url: url)
@@ -90,7 +103,6 @@ struct DrowsinessStartView: View {
 
         let body: [String: String] = [
             "uid": prefixedUid,
-            "mode": modeKey
         ]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
@@ -102,4 +114,29 @@ struct DrowsinessStartView: View {
             }
         }.resume()
     }
+}
+
+func emotionDetector() {
+    guard let uid = Auth.auth().currentUser?.uid else { return }
+
+    let prefixedUid = "[emotion]" + uid
+
+    let baseURL = AppConfig.shared.serverBaseURL
+    let url = URL(string: "\(baseURL)/start_emotion")!  // 다른 endpoint
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+    let body: [String: String] = [
+        "uid": prefixedUid
+    ]
+    request.httpBody = try? JSONSerialization.data(withJSONObject: body)
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("❌ 감정 인식 요청 실패: \(error.localizedDescription)")
+        } else {
+            print("✅ 감정 인식 요청 전송 완료")
+        }
+    }.resume()
 }

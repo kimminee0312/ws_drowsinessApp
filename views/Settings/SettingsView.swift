@@ -70,7 +70,7 @@ struct SettingsView: View {
                 Text("Logout")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.gray.opacity(80))
+                    .background(Color.gray.opacity(0.5))
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }

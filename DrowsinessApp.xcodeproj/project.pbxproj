@@ -48,6 +48,7 @@
 				Auth/SplashView.swift,
 				Dashboard/DashboardView.swift,
 				DrowsinessDetection/DrowsinessStartView.swift,
+				DrowsinessDetection/EmotionStatusView.swift,
 				DrowsinessDetection/StatusView.swift,
 				insights/BlinkYawnStatsView.swift,
 				insights/DailyChart.swift,
