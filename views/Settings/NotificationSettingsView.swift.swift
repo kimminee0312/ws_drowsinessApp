@@ -2,9 +2,10 @@ import SwiftUI
 import AVFoundation
 
 struct NotificationSettingsView: View {
-    @State private var drowsyAlert = true
-    @State private var badMoodAlert = false
-    @State private var goodMoodAlert = false
+    @AppStorage("drowsyAlert") private var drowsyAlert = true
+    @AppStorage("yawnAlert") private var yawnAlert = true
+    @AppStorage("badMoodAlert") private var badMoodAlert = false
+    @AppStorage("goodMoodAlert") private var goodMoodAlert = false
 
     var body: some View {
         NavigationView {
@@ -15,7 +16,12 @@ struct NotificationSettingsView: View {
                         SoundPlayer.shared.play(fileName: "drowsy_alert")
                     }
                 }
-
+                Section(header: Text("하품 감지 알림")) {
+                    Toggle("알림 사용", isOn: $yawnAlert)
+                    Button("사운드 재생") {
+                        SoundPlayer.shared.play(fileName: "alert1")
+                    }
+                }
                 Section(header: Text("기분 안 좋을 때 알림")) {
                     Toggle("알림 사용", isOn: $badMoodAlert)
                     Button("사운드 재생") {
@@ -31,26 +37,6 @@ struct NotificationSettingsView: View {
                 }
             }
             .navigationTitle("알림 설정")
-        }
-    }
-}
-
-class SoundPlayer {
-    static let shared = SoundPlayer()
-    private var player: AVAudioPlayer?
-
-    func play(fileName: String) {
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "mp3") else {
-            print("❌ 사운드 파일을 찾을 수 없음: \(fileName)")
-            return
-        }
-
-        do {
-            player = try AVAudioPlayer(contentsOf: url)
-            player?.prepareToPlay()
-            player?.play()
-        } catch {
-            print("❌ 오디오 재생 실패: \(error.localizedDescription)")
         }
     }
 }

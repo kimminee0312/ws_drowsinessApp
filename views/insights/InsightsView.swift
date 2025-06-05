@@ -13,7 +13,7 @@ struct InsightsView: View {
                 .bold()
                 .foregroundColor(Color(.darkGray)) // 어두운 회색
             
-            Text(vm.uid.isEmpty ? "UID 준비 중…" : "UID 확인 완료")
+            Text(vm.uid.isEmpty ? "로딩중" : "사용자 정보 확인 완료")
                 .foregroundColor(.gray)
             
             Button("Check Data") {

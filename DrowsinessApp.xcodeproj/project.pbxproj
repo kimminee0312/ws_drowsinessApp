@@ -63,12 +63,14 @@
 				Shared/AppConfig.swift,
 				Shared/CustomPlaceholderTextField.swift,
 				Shared/MainTabView.swift,
+				Shared/SoundPlayer.swift,
 			);
 			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
 		};
 		79E65E802DE70E24007B6084 /* Exceptions for "sound" folder in "DrowsinessApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				alert1.mp3,
 				drowsy_alert.mp3,
 				negative_alert.mp3,
 				negative_message.mp3,

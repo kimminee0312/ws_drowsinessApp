@@ -98,7 +98,7 @@ struct DateChartView: View {
                 
                 // 오른쪽: 피로 막대 + 피크 시각
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("피로도 점수")
+                    Text("피로도")
                         .font(.headline)
             
                     FatigueBarView(score: fatigueScore)
@@ -114,7 +114,7 @@ struct DateChartView: View {
                             // DateFormatter를 써서 “HH:mm” 형태로 출력
                             Text(DateChartView.timeFormatter.string(from: rawDate))
                                 .font(.caption2)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.blue)
                         } else {
                             // 아직 선택된 요약이 없거나, 해당 요약에 피크 시간이 없으면 None 대체
                             Text("None")
