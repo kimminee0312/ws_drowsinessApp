@@ -215,7 +215,7 @@ struct EmotionDateChartsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // 타이틀
-            Text("내 안전 운전 점수")
+            Text("내 감정 점수")
                 .font(.headline)
                 .foregroundColor(axisColor)
 
