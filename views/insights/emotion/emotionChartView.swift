@@ -19,6 +19,7 @@ struct EmotionChartView: View {
                 .symbolSize(50)
             }
         }
+        .chartYScale(domain: 0...100) // 👉 Y축 고정 추가 ⭐️
         .chartXAxis {
             AxisMarks(values: .stride(by: .day)) { _ in
                 AxisGridLine()

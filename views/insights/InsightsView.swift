@@ -21,7 +21,13 @@ struct InsightsView: View {
             Button("Check Insights") {
                 if vm.uid.isEmpty,
                    let u = Auth.auth().currentUser?.uid { vm.uid = u }
+                
+                if emotionVM.uid.isEmpty,
+                       let u = Auth.auth().currentUser?.uid { emotionVM.uid = u }
+                
                 guard !vm.uid.isEmpty else { return }
+                guard !emotionVM.uid.isEmpty else { return }
+
                 showStats = true
             }
             .frame(maxWidth: .infinity)
