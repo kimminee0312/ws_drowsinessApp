@@ -2,49 +2,91 @@ import SwiftUI
 
 struct StatisticsView: View {
     @EnvironmentObject var vm: SessionViewModel
+    @EnvironmentObject var emotionVM: EmotionSessionViewModel
     @State private var selDay: DailySummary? = nil
+    @State private var selectedTab = 0
+    
+    let tabs = ["Drowsy History", "Emotion History"]
     
     var body: some View {
         NavigationView {
-            Group {
-                if vm.dailySummaries.isEmpty {
-                    ProgressView("데이터 불러오는 중…")
-                } else {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        Text("Insights")
-                            .font(.title2)
-                            .bold()
-                            .foregroundColor(Color(.darkGray)) // 어두운 회색
-                        
-                        DateChartView(
-                            selectedDate: selDay?.date,
-                            safeScore:    selDay?.safeAvg ?? 0,
-                            fatigueScore: selDay?.fatigueAvg ?? 0,
-                            summaries:    vm.dailySummaries,
-                            selectedSummary: $selDay
-                        )
-
-                        .padding(.top, 16)
-                        Divider().padding(.vertical, 8)
-                        
-                        // ── ⓒ 상세 뷰 or 안내문 ──
-                        if let d = selDay {
-                            BlinkYawnStatsViewDaily(day: d)
-                                .padding(.bottom, 16)
-                        } else {
-                            Text("날짜를 탭해주세요")
-                                .foregroundColor(.gray)
-                                .padding(.top, 20)
+            VStack(spacing: 0) {
+                // ------------------상단 탭바 커스텀---------------------
+                HStack {
+                    ForEach(0..<tabs.count, id: \.self) { index in
+                        Button(action: {
+                            selectedTab = index
+                        }) {
+                            Text(tabs[index])
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 16)
+                                .background(selectedTab == index ? Color.blue.opacity(0.1) : Color.clear)
+                                .cornerRadius(8)
+                                .foregroundColor(selectedTab == index ? .blue : .gray)
                         }
-                        Spacer()
                     }
                 }
+                .padding()
+                .background(Color.white)
+                .overlay(Divider(), alignment: .bottom)
+                
+                // --------------------선택된 탭에 따른 데이터 통계---------------------
+                Group {
+                    if selectedTab == 0 {
+                        if vm.dailySummaries.isEmpty {
+                            ProgressView("데이터 불러오는 중…")
+                        } else {
+                            VStack(spacing: 0) {
+                                Spacer()
+                                Text("Drowsy Insights")
+                                    .font(.title2)
+                                    .bold()
+                                    .foregroundColor(Color(.darkGray)) // 어두운 회색
+                                
+                                DateChartView(
+                                    selectedDate: selDay?.date,
+                                    safeScore:    selDay?.safeAvg ?? 0,
+                                    fatigueScore: selDay?.fatigueAvg ?? 0,
+                                    summaries:    vm.dailySummaries,
+                                    selectedSummary: $selDay
+                                )
+                                .padding(.top, 16)
+                                
+                                Divider().padding(.vertical, 8)
+                                
+                                // ── ⓒ 상세 뷰 or 안내문 ──
+                                if let d = selDay {
+                                    BlinkYawnStatsViewDaily(day: d)
+                                        .padding(.bottom, 16)
+                                } else {
+                                    Text("날짜를 탭해주세요")
+                                        .foregroundColor(.gray)
+                                        .padding(.top, 20)
+                                }
+                                
+                                Spacer()
+                            }
+                        }
+                        
+                    } else if selectedTab == 1 {
+                        VStack(Spacing: 0){
+                            Spacer()
+                            Text("Emotion Insights")
+                                .font(.title2)
+                                .bold()
+                                .foregroundColor(Color(.darkGray)) // 어두운 회색
+                            // ---------------감정 인식 통계 뷰-------------------
+                            EmotionDateChartsView()
+                            .padding(.top, 16)
+
+                        }
+                    }
+                }
+                .background(Color.white)
+                .navigationBarHidden(true)
             }
-            .background(Color.white)
-            .navigationBarHidden(true)
+            .background(Color.white.ignoresSafeArea())
         }
-        .background(Color.white.ignoresSafeArea())
     }
 }
 
@@ -162,3 +204,59 @@ struct DateChartView: View {
         .background(.white)
     }
 }
+
+struct EmotionDateChartsView: View {
+    @EnvironmentObject var emotionVM: EmotionSessionViewModel
+    @State private var selectedSummary: EmotionSummary? = nil
+
+    private let axisColor = Color(.darkGray)
+    private let hPad: CGFloat = 16
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // 타이틀
+            Text("내 안전 운전 점수")
+                .font(.headline)
+                .foregroundColor(axisColor)
+
+            // 그래프
+            EmotionChartView(
+                summaries: emotionVM.emotionSummaries,
+                selected: $selectedSummary,
+                axisColor: axisColor
+            )
+            .frame(height: 250)
+            .background(Color.white)
+            .cornerRadius(8)
+            .padding(.horizontal, hPad)
+            .padding(.top, 12)
+
+            Divider().padding(.vertical, 8)
+
+            // 오늘의 감정
+            VStack(alignment: .leading, spacing: 8) {
+                Text("오늘의 감정")
+                    .font(.headline)
+                    .foregroundColor(axisColor)
+
+                if let summary = selectedSummary {
+                    EmotionImageView(emotionSummary: summary.emotionSummary)
+                        .scaledToFit()
+                        .frame(maxWidth: 140, maxHeight: 140)
+                        .cornerRadius(12)
+                } else {
+                    Text("날짜를 탭해주세요")
+                        .foregroundColor(.gray)
+                        .padding(.top, 20)
+                }
+            }
+            .padding(.horizontal, hPad)
+
+            Spacer()
+        }
+        .onAppear {
+            emotionVM.fetchEmotionSummaries()
+        }
+    }
+}
+

@@ -89,7 +89,7 @@ final class SessionViewModel: ObservableObject {
             grp.enter()
             col.getDocuments { snap, err in
                 defer { grp.leave() }
-                if let err { return }
+                if err != nil { return }
                 for doc in snap?.documents ?? [] {
                     if var s = try? doc.data(as: SessionData.self) {
                         s.date = d
@@ -182,3 +182,5 @@ private extension Collection where Element == Double {
 private extension Collection where Element: BinaryInteger {
     func average() -> Double { isEmpty ? 0 : Double(reduce(0, +)) / Double(count) }
 }
+
+

@@ -9,15 +9,22 @@ struct SettingsView: View {
     @State private var faceIdRegistered = false // 임의로 등록 했다고 가정 =========================
     @State private var showFaceRegistration = false
     @State private var showNotificationSettingsView = false
+    @State private var showAboutView = false
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack() {
             Spacer()
             
             Text("Settings")
                 .font(.title2)
                 .bold()
                 .foregroundColor(Color(.darkGray)) // 어두운 회색
+                .padding(.bottom, 20)
+            
+            Text("얼굴 등록")
+                .font(.footnote)
+                .foregroundColor(.gray)
+                .padding(.bottom, 3)
             
             if !faceIdRegistered {
                 Button(action: {
@@ -52,6 +59,12 @@ struct SettingsView: View {
                 .cornerRadius(10)
             }
             
+            Text("사운드 설정")
+                .font(.footnote)
+                .foregroundColor(.gray)
+                .padding(.bottom, 3)
+                .padding(.top, 15)
+
             Button(action: {
                 showNotificationSettingsView = true
             }) {
@@ -66,15 +79,33 @@ struct SettingsView: View {
                 NotificationSettingsView()
             }
             
+            Button(action: {
+                showAboutView = true
+            }) {
+                Text("Technology Implementation")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.blue, lineWidth: 2) // 파란색 테두리 추가
+                    )
+                    .cornerRadius(10)
+                    .padding(.bottom, 10)
+                    .padding(.top, 30)
+            }
+            .sheet(isPresented: $showAboutView) {
+                AboutView()
+            }
             Button(action: logout) {
                 Text("Logout")
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.gray.opacity(0.5))
                     .foregroundColor(.white)
+                    .background(Color.gray.opacity(0.5))
+                    .fontWeight(.bold)
                     .cornerRadius(10)
             }
-
             Spacer()
         }
         .padding()

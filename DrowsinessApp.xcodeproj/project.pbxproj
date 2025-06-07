@@ -12,6 +12,7 @@
 		795D79632DEDEC96008088C6 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 795D79622DEDEC96008088C6 /* FirebaseFirestore */; };
 		795D79652DEDEC9D008088C6 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 795D79642DEDEC9D008088C6 /* FirebaseStorage */; };
 		795D79672DEDECB9008088C6 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 795D79662DEDECB9008088C6 /* FirebaseAnalytics */; };
+		79B6C0CA2DF4B605001F5710 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 79B6C0C92DF4B605001F5710 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		79B6C0CE2DF4B60B001F5710 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		792E8CA92DA44D6F00E91C8B /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		792E8CB12DA456AB00E91C8B /* DrowsinessApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrowsinessApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -39,10 +53,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		79B6C0D92DF4B991001F5710 /* Exceptions for "Image" folder in "DrowsinessApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App_1024.png,
+				driver_face_angry_1024.png,
+				driver_face_happy_1024.png,
+			);
+			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
+		};
 		79D6C1032DD3C17D00B94FA5 /* Exceptions for "views" folder in "DrowsinessApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Auth/AuthManager.swift,
+				Auth/loading.json,
 				Auth/LoginView.swift,
 				Auth/RegisterView.swift,
 				Auth/SplashView.swift,
@@ -50,14 +74,19 @@
 				DrowsinessDetection/DrowsinessStartView.swift,
 				DrowsinessDetection/EmotionStatusView.swift,
 				DrowsinessDetection/StatusView.swift,
-				insights/BlinkYawnStatsView.swift,
-				insights/DailyChart.swift,
 				insights/DateChartView.swift,
-				insights/FatigueBarView.swift,
+				insights/Drowsy/BlinkYawnStatsView.swift,
+				insights/Drowsy/DailyChart.swift,
+				insights/Drowsy/FatigueBarView.swift,
+				insights/Drowsy/Model.swift,
+				insights/Drowsy/safeGaugeView.swift,
+				insights/Drowsy/SessionViewModel.swift,
+				insights/emotion/emotionChartView.swift,
+				insights/emotion/emotionImageView.swift,
+				insights/emotion/emotionModel.swift,
+				insights/emotion/emotionSessionViewModel.swift,
 				insights/InsightsView.swift,
-				insights/Model.swift,
-				insights/safeGaugeView.swift,
-				insights/SessionViewModel.swift,
+				Settings/AboutView.swift,
 				Settings/FaceRegistrationView.swift,
 				Settings/NotificationSettingsView.swift.swift,
 				Settings/SettingsView.swift,
@@ -90,6 +119,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		79B6C0D22DF4B978001F5710 /* Image */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				79B6C0D92DF4B991001F5710 /* Exceptions for "Image" folder in "DrowsinessApp" target */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
 		79D4A7432DA4493000C4DB52 /* DrowsinessApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -126,6 +163,7 @@
 				795D795F2DEDEC8C008088C6 /* FirebaseAuth in Frameworks */,
 				795D79672DEDECB9008088C6 /* FirebaseAnalytics in Frameworks */,
 				795D79632DEDEC96008088C6 /* FirebaseFirestore in Frameworks */,
+				79B6C0CA2DF4B605001F5710 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,6 +194,7 @@
 		79D4A7382DA4493000C4DB52 = {
 			isa = PBXGroup;
 			children = (
+				79B6C0D22DF4B978001F5710 /* Image */,
 				79E65E7E2DE70DE6007B6084 /* sound */,
 				79D6C0DB2DD3B23400B94FA5 /* views */,
 				79D4A7432DA4493000C4DB52 /* DrowsinessApp */,
@@ -177,6 +216,7 @@
 				79D4A73D2DA4493000C4DB52 /* Sources */,
 				79D4A73E2DA4493000C4DB52 /* Frameworks */,
 				79D4A73F2DA4493000C4DB52 /* Resources */,
+				79B6C0CE2DF4B60B001F5710 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -192,6 +232,7 @@
 				795D79622DEDEC96008088C6 /* FirebaseFirestore */,
 				795D79642DEDEC9D008088C6 /* FirebaseStorage */,
 				795D79662DEDECB9008088C6 /* FirebaseAnalytics */,
+				79B6C0C92DF4B605001F5710 /* Lottie */,
 			);
 			productName = DrowsinessApp;
 			productReference = 792E8CB12DA456AB00E91C8B /* DrowsinessApp.app */;
@@ -271,6 +312,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				795D795D2DEDEC44008088C6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				79B6C0C82DF4B5D7001F5710 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 79D4A7382DA4493000C4DB52;
@@ -491,7 +533,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kml.drowsyApp.DrowsinessApp.v3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kml.drowsyApp.DrowsinessApp.v5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -523,7 +565,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kml.drowsyApp.DrowsinessApp.v3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kml.drowsyApp.DrowsinessApp.v5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -653,6 +695,14 @@
 				minimumVersion = 11.13.0;
 			};
 		};
+		79B6C0C82DF4B5D7001F5710 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -680,6 +730,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 795D795D2DEDEC44008088C6 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalytics;
+		};
+		79B6C0C92DF4B605001F5710 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79B6C0C82DF4B5D7001F5710 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

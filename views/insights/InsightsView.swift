@@ -3,6 +3,8 @@ import FirebaseAuth
 
 struct InsightsView: View {
     @EnvironmentObject var vm: SessionViewModel
+    @EnvironmentObject var emotionVM: EmotionSessionViewModel
+
     @State private var showStats = false
     
     var body: some View {
@@ -16,7 +18,7 @@ struct InsightsView: View {
             Text(vm.uid.isEmpty ? "로딩중" : "사용자 정보 확인 완료")
                 .foregroundColor(.gray)
             
-            Button("Check Data") {
+            Button("Check Insights") {
                 if vm.uid.isEmpty,
                    let u = Auth.auth().currentUser?.uid { vm.uid = u }
                 guard !vm.uid.isEmpty else { return }
@@ -37,6 +39,7 @@ struct InsightsView: View {
         .sheet(isPresented: $showStats) {
             StatisticsView()
                 .environmentObject(vm)
+                .environmentObject(emotionVM)
         }
     }
 }

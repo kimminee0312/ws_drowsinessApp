@@ -10,7 +10,7 @@ struct DrowsinessStartView: View {
     
     // Segmented Picker 메뉴용 상태 변수
     @State private var selectedMode = "Default Mode"
-    let modes = ["Drowsy-Dect Mode", "Emotion-Based Mode"]
+    let modes = ["Drowsy-Dect Mode", "Emotion-Dect Mode"]
 
     var body: some View {
         VStack(spacing: 5) {
@@ -25,17 +25,18 @@ struct DrowsinessStartView: View {
                 .font(.footnote)
                 .foregroundColor(.gray)
                 .padding(.top, 20)
+                .padding(.bottom, 5)
 
             // Segmented Picker
             Picker("Mode", selection: $selectedMode) {
                 ForEach(modes, id: \.self) { mode in
                     Text(mode)
+                        .foregroundColor(Color(.darkGray)) // 어두운 회색
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
             .tint(.blue)
             .padding(.horizontal)
-            .padding(.bottom, 5)
 
             // System Start 버튼
             Button(action: {
@@ -48,7 +49,7 @@ struct DrowsinessStartView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
-            .padding(.top, 20)
+            .padding(.top, 15)
 
             Spacer()
         }

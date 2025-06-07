@@ -27,7 +27,7 @@ struct RegisterView: View {
                     .font(.title2)
                 
                 Group {
-                    Text("Name")
+                    Text("English Name")
                         .font(.caption)
                         .foregroundColor(.gray)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -41,6 +41,7 @@ struct RegisterView: View {
                         .padding(.horizontal)
                         .background(Color(UIColor.lightGray).opacity(0.2))
                         .cornerRadius(8)
+                    
                     
                     Text("Birth")
                         .font(.caption)
@@ -77,7 +78,7 @@ struct RegisterView: View {
                         .font(.caption)
                         .foregroundColor(.gray)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    CustomPlaceholderTextField(placeholder: " ", text: $password)
+                    CustomPlaceholderTextField(placeholder: "Please enter at least 6 characters ", text: $password)
                         .frame(height: 44)
                         .padding(.horizontal)
                         .background(Color(UIColor.lightGray).opacity(0.2))
