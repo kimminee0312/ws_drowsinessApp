@@ -16,7 +16,7 @@
 		<false/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>172.20.10.1</key>
+			<key>172.20.10.3</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -25,8 +25,13 @@
 			</dict>
 		</dict>
 	</dict>
+    
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>로컬 네트워크의 서버와 통신하기 위해 사용됩니다.</string>
+    
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+    
 	<key>UIRequiresFullScreen</key>
 	<true/>
 </dict>

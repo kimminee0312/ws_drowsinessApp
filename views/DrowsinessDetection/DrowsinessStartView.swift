@@ -77,7 +77,7 @@ struct DrowsinessStartView: View {
                     if selectedMode == "Drowsy-Dect Mode" {
                         drowsinessDetector()
                         showStatusScreen = true
-                    } else if selectedMode == "Emotion-Based Mode" {
+                    } else if selectedMode == "Emotion-Dect Mode" {
                         emotionDetector()
                         showEmotionStatusScreen = true
                     }
@@ -89,7 +89,6 @@ struct DrowsinessStartView: View {
             }
         }
     }
-    
     // DrowsinessDetector start sign
     func drowsinessDetector() {
         guard let uid = Auth.auth().currentUser?.uid else { return }

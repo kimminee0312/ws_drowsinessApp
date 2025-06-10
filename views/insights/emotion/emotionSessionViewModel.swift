@@ -55,23 +55,15 @@ final class EmotionSessionViewModel: ObservableObject {
     deinit { listeners.forEach { $0.remove() } }
     
     func fetchAllSessions() {
-        print("[DEBUG] fetchAllSessions called")
-        print("[DEBUG] uid: \(uid)")
-
         guard !uid.isEmpty else { return }
 
         let col = db.collection("users").document(uid).collection("EmotionData")
         col.getDocuments { [weak self] (snap: QuerySnapshot?, err: Error?) in
             guard let self else { return }
-            print("[DEBUG] inside getDocuments callback")
             if let err {
-                print("[DEBUG] Error: \(err.localizedDescription)")
                 self.errorMessage = err.localizedDescription
                 return
             }
-
-            print("[DEBUG] documents count: \(snap?.documents.count ?? 0)")
-            
             let dayIDs = snap?.documents.map(\.documentID) ?? []
             self.listenSessions(for: dayIDs)
         }

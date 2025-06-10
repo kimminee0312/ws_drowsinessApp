@@ -53,15 +53,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		79B6C0D92DF4B991001F5710 /* Exceptions for "Image" folder in "DrowsinessApp" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				App_1024.png,
-				driver_face_angry_1024.png,
-				driver_face_happy_1024.png,
-			);
-			target = 79D4A7402DA4493000C4DB52 /* DrowsinessApp */;
-		};
 		79D6C1032DD3C17D00B94FA5 /* Exceptions for "views" folder in "DrowsinessApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -122,14 +113,6 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		79B6C0D22DF4B978001F5710 /* Image */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				79B6C0D92DF4B991001F5710 /* Exceptions for "Image" folder in "DrowsinessApp" target */,
-			);
-			path = Image;
-			sourceTree = "<group>";
-		};
 		79D4A7432DA4493000C4DB52 /* DrowsinessApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -197,7 +180,6 @@
 		79D4A7382DA4493000C4DB52 = {
 			isa = PBXGroup;
 			children = (
-				79B6C0D22DF4B978001F5710 /* Image */,
 				79E65E7E2DE70DE6007B6084 /* sound */,
 				79D6C0DB2DD3B23400B94FA5 /* views */,
 				79D4A7432DA4493000C4DB52 /* DrowsinessApp */,

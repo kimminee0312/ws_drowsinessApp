@@ -67,7 +67,7 @@ struct AboutView: View {
                         BulletPoint(text: "dlib 68-point facial landmark detector 기반 상태 전이 로직 구현")
                         BulletPoint(text: "OpenCV 기반 하품, 눈 감김, 고개 끄덕임 감지 및 실시간 졸음 상태 분석 및 인식 알고리즘 개발")
                         BulletPoint(text: "사용자별 Custom Threshold 로직 구현 (Calibration 단계 후 Threshold 설정)")
-                        BulletPoint(text: "알고리즘 성능 평가 실험 설계 및 F1-score 기반 분석 수행")
+                        BulletPoint(text: "알고리즘 성능 평가  실험 설계 및 F1-score 기반 분석 수행")
                     }
                     Group {
                         Text("앱 및 시스템 통신 개발")
