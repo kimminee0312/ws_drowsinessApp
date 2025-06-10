@@ -2,18 +2,18 @@ import SwiftUI
 
 /// 반원형 안전 점수 게이지 (0 – 100)
 struct EmotionGaugeView: View {
-    var score: Double            // 0 – 100
+    var avgEmotionScore: Double            // 0 – 100
     var spanDeg: Double = 210   // ⬅︎ 원하는 각도(°)
     // 호의 총 길이를 비율로 환산
     private var spanRatio: Double { spanDeg / 360 }
     
     // "score%" 만큼 진행된 trim 끝점
-    private var progressEnd: Double { spanRatio * max(0, min(score, 100)) / 100 }
+    private var progressEnd: Double { spanRatio * max(0, min(avgEmotionScore, 100)) / 100 }
 
     // 시작 위치를 위쪽 중앙으로 맞추기 위한 회전값
     private var rotation: Double {270 - spanDeg / 2}
     private var gaugeColor: Color {
-        switch score {
+        switch avgEmotionScore {
         case 80...: return .blue
         case 60..<80: return .yellow
         default: return .red
@@ -38,7 +38,7 @@ struct EmotionGaugeView: View {
                     .animation(.easeOut(duration: 0.4), value: progressEnd)
 
                 // 중앙 점수 숫자
-                Text(String(format: "%.0f", score))
+                Text(String(format: "%.0f", avgEmotionScore))
                     .font(.title3.bold())
                     .foregroundColor(gaugeColor)
                     .offset(y: 7)                // 반원 아래쪽 보정

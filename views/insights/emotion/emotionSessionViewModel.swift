@@ -2,69 +2,85 @@ import Foundation
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
+import Combine
 
 // MARK: - 일(日) 단위 감정 집계 모델
 struct DailyEmotionSummary: Identifiable {
     let date: Date
     let avgEmotionScore: Double
     let dominantEmotion: String
-    let sessions: [EmotionSessionData]
-    
-    var id: String { Self.dayF.string(from: date) }
-    
-    private static let dayF: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
-}
+    let emotionSessions: [EmotionSessionData]
+    let startTime: String
+    let endTime: String
+    let positiveDuration: Double
+    let neutralDuration: Double
+    let negativeDuration: Double
 
-struct EmotionSessionData: Identifiable, Codable {
-    @DocumentID var id: String? // session_id
-    var emotion_score: Double
-    var emotion_summary: String
-    
-    var date: Date? // Sessions 상위 날짜 기준
+    var id: String { Self.dayFormatter.string(from: date) }
+
+    private static let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
 }
 
 @MainActor
 final class EmotionSessionViewModel: ObservableObject {
+    // MARK: Published
     @Published var uid: String {
-        didSet { if !uid.isEmpty { fetchAllSessions() } }
+        didSet {
+            if !uid.isEmpty { fetchAllSessions() }
+        }
     }
-    @Published private(set) var sessions: [EmotionSessionData] = []
-    @Published private(set) var emotionSummaries: [EmotionSummary] = []
+    @Published private(set) var emotionSessions: [EmotionSessionData] = []
     @Published var errorMessage: String?
-    
+
     var dailyEmotionSummaries: [DailyEmotionSummary] {
-        Self.buildDailySummaries(from: sessions)
+        Self.buildDailySummaries(from: emotionSessions)
     }
-    
+
+    // MARK: Private
     private let db = Firestore.firestore()
     private var listeners: [ListenerRegistration] = []
-    
-    private static let dayF: DateFormatter = {
-        let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f
+
+    private static let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
     }()
-    
+    private static let timeFormatter1: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        return formatter
+    }()
+    private static let timeFormatter2: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
+
+    // MARK: Lifecycle
     init(uid: String) {
         self.uid = uid
         if !uid.isEmpty { fetchAllSessions() }
     }
-    
-    deinit { listeners.forEach { $0.remove() } }
-    
+
+    deinit {
+        listeners.forEach { $0.remove() }
+    }
+
+    // MARK: Firestore Fetch
     func fetchAllSessions() {
         guard !uid.isEmpty else { return }
-
-        let col = db.collection("users").document(uid).collection("EmotionData")
-        col.getDocuments { [weak self] (snap: QuerySnapshot?, err: Error?) in
-            guard let self else { return }
-            if let err {
-                self.errorMessage = err.localizedDescription
+        let collection = db.collection("users").document(uid).collection("EmotionData")
+        collection.getDocuments(source: .server) { [weak self] snapshot, error in
+            guard let self = self else { return }
+            if let error = error {
+                self.errorMessage = error.localizedDescription
                 return
             }
-            let dayIDs = snap?.documents.map(\.documentID) ?? []
+            let dayIDs = snapshot?.documents.map { $0.documentID } ?? []
             self.listenSessions(for: dayIDs)
         }
     }
@@ -72,81 +88,110 @@ final class EmotionSessionViewModel: ObservableObject {
     private func listenSessions(for dayIDs: [String]) {
         listeners.forEach { $0.remove() }
         listeners.removeAll()
-        
-        var all: [EmotionSessionData] = []
-        let grp = DispatchGroup()
-        
-        for dID in dayIDs {
-            guard let d = Self.dayF.date(from: dID) else { continue }
-            let col = db.collection("users").document(uid)
-                .collection("EmotionData").document(dID)
+
+        var allSessions: [EmotionSessionData] = []
+        let dispatchGroup = DispatchGroup()
+
+        for dayID in dayIDs {
+            guard let date = Self.dayFormatter.date(from: dayID) else { continue }
+            let collection = db.collection("users").document(uid)
+                .collection("EmotionData").document(dayID)
                 .collection("Sessions")
-            
-            grp.enter()
-            col.getDocuments { snap, err in
-                defer { grp.leave() }
-                if err != nil { return }
-                for doc in snap?.documents ?? [] {
-                    if var s = try? doc.data(as: EmotionSessionData.self) {
-                        s.date = d
-                        all.append(s)
+
+            dispatchGroup.enter()
+            collection.getDocuments { snapshot, error in
+                defer { dispatchGroup.leave() }
+                guard error == nil else { return }
+                for doc in snapshot?.documents ?? [] {
+                    if var session = try? doc.data(as: EmotionSessionData.self) {
+                        session.date = date
+                        allSessions.append(session)
                     }
                 }
             }
         }
-        
-        grp.notify(queue: .main) {
-            print("[DEBUG] Loaded sessions count: \(all.count)")
-            self.sessions = all.sorted(by: Self.sessionSorter)
-            self.updateEmotionSummariesFromSessions() // ⭐️ 업데이트 추가
+
+        dispatchGroup.notify(queue: .main) {
+            self.emotionSessions = allSessions.sorted(by: Self.sessionSorter)
         }
     }
-    
-    private func updateEmotionSummariesFromSessions() {
-        self.emotionSummaries = self.sessions.map { session in
-            EmotionSummary(
-                id: session.id ?? UUID().uuidString,
-                date: session.date ?? Date(timeIntervalSince1970: 0),
-                emotionScore: session.emotion_score,
-                emotionSummary: session.emotion_summary
-            )
-        }
-        .sorted { $0.date < $1.date }
-    }
-    
+
+    // MARK: Utilities
     private static func sessionSorter(_ a: EmotionSessionData, _ b: EmotionSessionData) -> Bool {
-        if let d1 = a.date, let d2 = b.date, d1 != d2 { return d1 < d2 }
-        return false
-    }
-    
-    private static func buildDailySummaries(from list: [EmotionSessionData]) -> [DailyEmotionSummary] {
-        let grouped = Dictionary(grouping: list) {
-            dayF.string(from: $0.date ?? Date(timeIntervalSince1970: 0))
+        if let dateA = a.date, let dateB = b.date, dateA != dateB {
+            return dateA < dateB
         }
-        
-        return grouped.compactMap { dateString, ss -> DailyEmotionSummary? in
-            guard let dayDate = dayF.date(from: dateString) else { return nil }
-            
-            let avgEmotionScore = ss.map(\.emotion_score).filter { $0.isFinite }.average()
-            
-            let dominantEmotion = ss.map(\.emotion_summary)
-                .reduce(into: [:]) { counts, summary in
-                    counts[summary, default: 0] += 1
+        guard let timeA = parseTime(from: a.start_time), let timeB = parseTime(from: b.start_time) else {
+            return false
+        }
+        return timeA < timeB
+    }
+
+    private static func parseTime(from string: String) -> Date? {
+        if let date = timeFormatter1.date(from: string) {
+            return date
+        }
+        return timeFormatter2.date(from: string)
+    }
+
+    private static func buildDailySummaries(from sessions: [EmotionSessionData]) -> [DailyEmotionSummary] {
+        let grouped = Dictionary(grouping: sessions) { session in
+            dayFormatter.string(from: session.date ?? .distantPast)
+        }
+
+        return grouped.compactMap { dayString, sessions in
+            guard let dayDate = dayFormatter.date(from: dayString) else { return nil }
+
+            // Avg emotion score
+            let scores = sessions.map { $0.emotion_score }.filter { $0.isFinite }
+            let avgScore = scores.isEmpty ? 0 : scores.reduce(0, +) / Double(scores.count)
+
+            // Dominant emotion
+            let dominant = sessions
+                .map { $0.emotion_summary }
+                .reduce(into: [:]) { counts, emo in
+                    counts[emo, default: 0] += 1
                 }
-                .max(by: { $0.value < $1.value })?.key ?? "Unknown"
-            
+                .max(by: { $0.value < $1.value })?
+                .key ?? "Unknown"
+
+            // 세션 필드 기반 총 지속시간
+            let positiveDuration = sessions.map { $0.positive_duration ?? 0 }.reduce(0, +)
+            let neutralDuration  = sessions.map { $0.neutral_duration  ?? 0 }.reduce(0, +)
+            let negativeDuration = sessions.map { $0.negative_duration ?? 0 }.reduce(0, +)
+            // 일일 시작/종료 시간 (옵션)
+            let starts = sessions.compactMap { parseTime(from: $0.start_time) }
+            let ends   = sessions.compactMap { parseTime(from: $0.end_time)   }
+            let calendar = Calendar.current
+            let earliestStart = starts.min().flatMap { calStart in
+                calendar.date(bySettingHour: calendar.component(.hour, from: calStart),
+                              minute: calendar.component(.minute, from: calStart),
+                              second: calendar.component(.second, from: calStart), of: dayDate)
+            }
+            let latestEnd = ends.max().flatMap { calEnd in
+                calendar.date(bySettingHour: calendar.component(.hour, from: calEnd),
+                              minute: calendar.component(.minute, from: calEnd),
+                              second: calendar.component(.second, from: calEnd), of: dayDate)
+            }
+            let startTimeStr = earliestStart.map { timeFormatter1.string(from: $0) } ?? ""
+            let endTimeStr   = latestEnd.map   { timeFormatter1.string(from: $0) } ?? ""
+
             return DailyEmotionSummary(
                 date: dayDate,
-                avgEmotionScore: avgEmotionScore,
-                dominantEmotion: dominantEmotion,
-                sessions: ss
+                avgEmotionScore: avgScore,
+                dominantEmotion: dominant,
+                emotionSessions: sessions,
+                startTime: startTimeStr,
+                endTime: endTimeStr,
+                positiveDuration: positiveDuration,
+                neutralDuration: neutralDuration,
+                negativeDuration: negativeDuration
             )
         }
         .sorted { $0.date < $1.date }
     }
 }
 
-// MARK: - Small helpers
 private extension Collection where Element == Double {
     func average() -> Double { isEmpty ? 0 : reduce(0, +) / Double(count) }
 }

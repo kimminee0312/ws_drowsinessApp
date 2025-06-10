@@ -1,44 +1,46 @@
 import SwiftUI
 struct EmotionDateChartsView: View {
     @EnvironmentObject var emotionVM: EmotionSessionViewModel
-    @State private var selectedSummary: EmotionSummary? = nil
-    
+    @Binding var selectedSummary: DailyEmotionSummary?   // ← @State → @Binding
+
     private let axisColor = Color(.darkGray)
+    private let plotBg     = Color.white
     private let hPad: CGFloat = 16
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    VStack() {
-                        Text("내 감정 점수")
-                            .font(.headline)
-                            .foregroundColor(axisColor)
-                            .padding(.top, 10)
+            HStack {
+                VStack() {
+                    Text("내 감정 점수")
+                        .font(.headline)
+                        .foregroundColor(axisColor)
+                        .padding(.top, 10)
+                    
+                    EmotionGaugeView(
+                        avgEmotionScore: selectedSummary?.avgEmotionScore ?? 0
+                    )
+                    .frame(width: 140)
+                    .padding(.top, 15)
+                }
+                VStack() {
+                    if let summary = selectedSummary {
+                        EmotionImageView(
+                            emotionSummary: summary.dominantEmotion
+                        )
+                        .scaledToFit()
+                        .frame(maxWidth: 140, maxHeight: 140)
+                        .cornerRadius(12)
                         
-                        EmotionGaugeView(score: selectedSummary?.emotionScore ?? 0)
-                            .frame(width: 140)
-                            .padding(.top, 15)
-                    }
-                    VStack() {
-                        if let summary = selectedSummary {
-                            EmotionImageView(emotionSummary: summary.emotionSummary)
-                                .scaledToFit()
-                                .frame(maxWidth: 140, maxHeight: 140)
-                                .cornerRadius(12)
-                        } else {
-                            Text("날짜를 탭해주세요")
-                                .foregroundColor(.gray)
-                                .padding(.top, 10)
-                                .padding(.bottom, 5)
-                        }
-                        
-                        Text("오늘의 감정: ")
+                        Text("[ 오늘의 감정 ]")
                             .font(.caption2)
                             .foregroundColor(axisColor)
+                    } else {
+                        Text("날짜를 탭해주세요")
+                            .foregroundColor(.gray)
+                            .padding(.top, 10)
+                            .padding(.bottom, 5)
                     }
                 }
-                .padding(.horizontal, hPad)
             }
             .padding(.horizontal, hPad)
             
@@ -46,23 +48,24 @@ struct EmotionDateChartsView: View {
                 .font(.headline)
                 .foregroundColor(axisColor)
                 .padding(.top, 10)
-                .padding(.bottom, 5)
+                .padding(.leading, hPad)
             
             // 그래프
             EmotionChartView(
-                summaries: emotionVM.emotionSummaries,   // 사용 OK
+                summaries: emotionVM.dailyEmotionSummaries,
                 selected: $selectedSummary,
                 axisColor: axisColor
             )
-            .frame(height: 200)
-            .background(Color.white)
+            .frame(height: 250)
+            .background(plotBg)
+            .padding(.horizontal, hPad)
             .cornerRadius(8)
-            .padding(.top, 12)
+            .padding(.top, 5)
+            .onAppear {
+                emotionVM.fetchAllSessions()
+            }
         }
-        .padding(.horizontal, hPad)
-        Divider().padding(.vertical, 8)
-        .onAppear {
-            emotionVM.fetchAllSessions()
-        }
+        .padding(.vertical, 5)
+        .background(.white)
     }
 }

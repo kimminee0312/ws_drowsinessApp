@@ -42,6 +42,7 @@ struct DateChartView: View {
                 Text("눈 감김 지속 시간을 70점 만점으로 환산하고\n"
                    + "하품·피로 지표를 합산해 0-100 범위로 계산한 값입니다.")
             }
+            .padding(.bottom, 2)
             // ───── 안전 게이지 + 피로도 박스 ─────
             HStack(alignment: .top, spacing: 20) {
                 // 왼쪽: 반원형 안전 게이지
@@ -108,9 +109,9 @@ struct DateChartView: View {
             .background(plotBg)
             .cornerRadius(8)
             .padding(.horizontal, hPad)
-            .padding(.top, 12)
+            .padding(.top, 3)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 5)
         .background(.white)
     }
 }

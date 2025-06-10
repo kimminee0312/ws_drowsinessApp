@@ -78,6 +78,7 @@
 				insights/emotion/emotionImageView.swift,
 				insights/emotion/emotionModel.swift,
 				insights/emotion/emotionSessionViewModel.swift,
+				insights/emotion/emotionStatsView.swift,
 				insights/InsightsView.swift,
 				insights/StatisticsView.swift,
 				Settings/AboutView.swift,
