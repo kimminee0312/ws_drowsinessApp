@@ -4,6 +4,14 @@
 
 ROS 2 기반 졸음 감지 시스템과 **Firebase로 연동되어 운전자에게 실시간 알림을 전달**하는 iOS 어플리케이션입니다.
 
+
+<img width="988" height="377" alt="image" src="https://github.com/user-attachments/assets/58c1f77e-c2d5-4d73-a4ac-ee6a467e273a" />
+<img width="1742" height="677" alt="image" src="https://github.com/user-attachments/assets/0c8ac18e-351f-4514-b4e6-e7c405b3da25" />
+<img width="1754" height="669" alt="image" src="https://github.com/user-attachments/assets/0989b6ab-2f1b-4644-95d2-c951585418ed" />
+<img width="1737" height="660" alt="image" src="https://github.com/user-attachments/assets/19a0a425-4f74-41cf-b5c3-2b5649226ff9" />
+<img width="1049" height="663" alt="image" src="https://github.com/user-attachments/assets/27219870-527d-4f3b-b511-6701cd1c098b" />
+
+
 ---
 
 ## 프로젝트 목적
@@ -46,8 +54,4 @@ ws_drowsinessApp/
 | **`sound/`** | 졸음 알림 사운드 리소스 파일 |
 | **`.gitignore`** | Git 추적 제외 파일 (DerivedData·빌드 산출물 등) |
 
-<img width="988" height="377" alt="image" src="https://github.com/user-attachments/assets/58c1f77e-c2d5-4d73-a4ac-ee6a467e273a" />
-<img width="1742" height="677" alt="image" src="https://github.com/user-attachments/assets/0c8ac18e-351f-4514-b4e6-e7c405b3da25" />
-<img width="1754" height="669" alt="image" src="https://github.com/user-attachments/assets/0989b6ab-2f1b-4644-95d2-c951585418ed" />
-<img width="1737" height="660" alt="image" src="https://github.com/user-attachments/assets/19a0a425-4f74-41cf-b5c3-2b5649226ff9" />
-<img width="1049" height="663" alt="image" src="https://github.com/user-attachments/assets/27219870-527d-4f3b-b511-6701cd1c098b" />
+<img width="509" height="288" alt="image" src="https://github.com/user-attachments/assets/3e3e0e74-4789-4bbe-8caf-7e57ce113d0c" />
